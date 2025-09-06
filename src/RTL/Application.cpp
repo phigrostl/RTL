@@ -1,5 +1,7 @@
 #include "Application.h"
 
+#include "../Window/Window.h"
+
 #include <string>
 #include <memory>
 
@@ -16,12 +18,18 @@ namespace RTL {
 	}
 
 	void Application::Init() {
+		Window::Init();
+		m_Window = Window::Create(m_Name, m_Width, m_Height);
 	}
 
 	void Application::Terminate() {
 	}
 
 	void Application::Run() {
+		bool running = true;
+		while (running) {
+			OnUpdate();
+		}
 	}
 
 	void Application::OnUpdate() {
