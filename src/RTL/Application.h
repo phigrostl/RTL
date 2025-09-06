@@ -1,5 +1,5 @@
 #pragma once
-#include "../Window/Window.h"
+#include "Window/Window.h"
 
 #include <string>
 #include <chrono>
@@ -17,14 +17,15 @@ namespace RTL {
 		void Init();
 		void Terminate();
 
-		void OnUpdate();
+		void OnUpdate(float time);
 
 	private:
 		std::string m_Name;
 		int m_Width, m_Height;
 
-		Framebuffer m_Framebuffer;
 		Window* m_Window;
+		Framebuffer m_Framebuffer{ m_Width, m_Height };
+
 		std::chrono::steady_clock::time_point m_LastFrameTime;
 	};
 

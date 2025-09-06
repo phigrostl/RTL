@@ -44,6 +44,6 @@ namespace RTL {
 
 		static bool s_Inited;
 
-		char m_Keys[RGS_KEY_MAX_COUNT];
+		char m_Keys[RTL_KEY_MAX_COUNT];
 	};
 }

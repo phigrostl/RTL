@@ -10,16 +10,16 @@ add_executable (RTL
 	"src/RTL/Application.h"
 	"src/RTL/Application.cpp"
 
-	"src/Window/Window.cpp"
-	"src/Window/Window.h"
+	"src/RTL/Window/Window.cpp"
+	"src/RTL/Window/Window.h"
 
-	"src/Window/Framebuffer.h"
-	"src/Window/Framebuffer.cpp"
+	"src/RTL/Window/Framebuffer.h"
+	"src/RTL/Window/Framebuffer.cpp"
 
-	"src/Base/Base.h"
+	"src/RTL/Base/Base.h"
 
-	"src/Base/Maths.h"
-	"src/Base/Maths.cpp"
+	"src/RTL/Base/Maths.h"
+	"src/RTL/Base/Maths.cpp"
 
-	"src/Window/InputCodes.h"
+	"src/RTL/Window/InputCodes.h"
 )

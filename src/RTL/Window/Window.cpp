@@ -1,7 +1,7 @@
 #include "Window.h"
 
-#define RGS_WINDOW_ENTRY_NAME "Entry"
-#define RGS_WINDOW_CLASS_NAME "Class"
+#define RTL_WINDOW_ENTRY_NAME "Entry"
+#define RTL_WINDOW_CLASS_NAME "Class"
 
 namespace RTL {
 
@@ -17,7 +17,7 @@ namespace RTL {
 		rect.bottom = (long)height;
 		AdjustWindowRect(&rect, style, false);
 		m_Handle = CreateWindow(
-			RGS_WINDOW_CLASS_NAME,
+			RTL_WINDOW_CLASS_NAME,
 			m_Title.c_str(),
 			style,
 			CW_USEDEFAULT,
@@ -27,7 +27,7 @@ namespace RTL {
 			NULL, NULL, GetModuleHandle(NULL), NULL
 		);
 		m_Closed = false;
-		SetProp(m_Handle, RGS_WINDOW_ENTRY_NAME, this);
+		SetProp(m_Handle, RTL_WINDOW_ENTRY_NAME, this);
 
 		HDC windowDC = GetDC(m_Handle);
 		m_MemoryDC = CreateCompatibleDC(windowDC);
@@ -52,14 +52,14 @@ namespace RTL {
 		DeleteObject(oldBitmap);
 		ReleaseDC(m_Handle, windowDC);
 
-		memset(m_Keys, RGS_RELEASE, RGS_KEY_MAX_COUNT);
+		memset(m_Keys, RTL_RELEASE, RTL_KEY_MAX_COUNT);
 
 		Show();
 	}
 
 	Window::~Window() {
 		ShowWindow(m_Handle, SW_HIDE);
-		RemoveProp(m_Handle, RGS_WINDOW_ENTRY_NAME);
+		RemoveProp(m_Handle, RTL_WINDOW_ENTRY_NAME);
 		DeleteDC(m_MemoryDC);
 		DestroyWindow(m_Handle);
 	}
@@ -117,14 +117,14 @@ namespace RTL {
 		wc.hIcon = NULL;
 		wc.hInstance = GetModuleHandle(NULL);
 		wc.lpfnWndProc = Window::WndProc;
-		wc.lpszClassName = RGS_WINDOW_CLASS_NAME;
+		wc.lpszClassName = RTL_WINDOW_CLASS_NAME;
 		wc.style = CS_HREDRAW | CS_VREDRAW;
 		wc.lpszMenuName = NULL;
 		atom = RegisterClass(&wc);
 	}
 
 	LRESULT CALLBACK Window::WndProc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM lParam) {
-		Window* window = (Window*)GetProp(hWnd, RGS_WINDOW_ENTRY_NAME);
+		Window* window = (Window*)GetProp(hWnd, RTL_WINDOW_ENTRY_NAME);
 		if (window == nullptr)
 			return DefWindowProc(hWnd, msgID, wParam, lParam);
 		switch (msgID) {
@@ -132,10 +132,10 @@ namespace RTL {
 			window->m_Closed = true;
 			return 0;
 		case WM_KEYDOWN:
-			KeyPressImpl(window, wParam, RGS_PRESS);
+			KeyPressImpl(window, wParam, RTL_PRESS);
 			return 0;
 		case WM_KEYUP:
-			KeyPressImpl(window, wParam, RGS_RELEASE);
+			KeyPressImpl(window, wParam, RTL_RELEASE);
 			return 0;
 		}
 		return DefWindowProc(hWnd, msgID, wParam, lParam);
@@ -150,12 +150,12 @@ namespace RTL {
 	}
 
 	void Window::KeyPressImpl(Window* window, const WPARAM wParam, const char state) {
-		if (wParam >= 0 && wParam < RGS_KEY_MAX_COUNT)
+		if (wParam >= 0 && wParam < RTL_KEY_MAX_COUNT)
 			window->m_Keys[wParam] = state;
 	}
 
 	void Window::Unregister() {
-		UnregisterClass(RGS_WINDOW_CLASS_NAME, GetModuleHandle(NULL));
+		UnregisterClass(RTL_WINDOW_CLASS_NAME, GetModuleHandle(NULL));
 	}
 
 	Window* Window::Create(std::string title, int width, int height) {

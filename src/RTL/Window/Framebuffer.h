@@ -19,7 +19,7 @@ namespace RTL {
         Vec3 GetColor(const int x, const int y) const;
         float GetDepth(const int x, const int y) const;
 
-        void Clear(const Vec3& color = { 0.0f, 0.0f, 0.0f });
+        void Clear(const Vec3& color = { 0.7461f, 0.8008f, 0.8555f });
         void ClearDepth(float depth = 1.0f);
 
     private:
