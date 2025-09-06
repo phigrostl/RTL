@@ -1,4 +1,4 @@
-#include "Window.h"
+﻿#include "Window.h"
 
 #define RTL_WINDOW_ENTRY_NAME "Entry"
 #define RTL_WINDOW_CLASS_NAME "Class"

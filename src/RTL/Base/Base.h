@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #define LOG( ... )
-#define ASSERT(x, ...) 
+#define ASSERT(x, ...)

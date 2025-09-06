@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 
 #include "../Base/Maths.h"
 #include "../Base/Base.h"
 
 namespace RTL {
-    // Ö¡»º´æ
+
     class Framebuffer {
     public:
         Framebuffer(const int width, const int height);

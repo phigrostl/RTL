@@ -1,4 +1,4 @@
-#pragma once
+О╩©#pragma once
 #include <cmath>
 #include <string>
 #include <iostream>
@@ -82,7 +82,6 @@ namespace RTL {
         }
     };
 
-    // ╟╢ппсеох╢Ф╢╒ё╛╣зр╩апоРа©н╙ [0][0] [0][1] [0][2] [0][3] <=> 0, 4, 8, 12
     struct Mat4
     {
         float M[4][4];

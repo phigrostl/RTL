@@ -1,4 +1,4 @@
-#include "Maths.h"
+ï»¿#include "Maths.h"
 #include "Base.h"
 
 #include <cmath>
@@ -239,7 +239,6 @@ namespace RTL {
         return m;
     }
 
-    // TODO: ³öÏÖ up ÖØµşÔõÃ´°ì
     Mat4 Mat4LookAt(const Vec3& eye, const Vec3& target, const Vec3& up)
     {
         Vec3 zAxis = Normalize(eye - target);

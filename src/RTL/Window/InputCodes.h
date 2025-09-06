@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #define RTL_KEY_SPACE                 32
 #define RTL_KEY_APOSTROPHE			  39	//		'
