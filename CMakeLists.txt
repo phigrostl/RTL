@@ -2,5 +2,5 @@
 
 project ("RTL")
 
-add_executable (RTL "RTL/main.cpp")
+add_executable (RTL "src/RTL/main.cpp")
 
