@@ -16,10 +16,15 @@ namespace RTL {
 
 	template<typename vertex_t, typename uniforms_t, typename varyings_t>
 	struct Program {
+
 		using vertex_shader_t = void (*)(varyings_t&, const vertex_t&, const uniforms_t&);
 		vertex_shader_t VertexShader;
 
-		Program(const vertex_shader_t vertexShader) : VertexShader(vertexShader) {}
+		using fragment_shader_t = Vec4 (*)(bool& discard, const varyings_t&, const uniforms_t&);
+		fragment_shader_t FragmentShader;
+
+		Program(const vertex_shader_t vertexShader, const fragment_shader_t fragmentShader)
+			: VertexShader(vertexShader), FragmentShader(fragmentShader) {}
 	};
 
 	class Renderer {
@@ -35,10 +40,15 @@ namespace RTL {
 			NEGATIVE_Z,
 		};
 
+		struct BoundingBox {int MinX, MaxX, MinY, MaxY; };
+
 		static bool IsInsidePlane(const Vec4& clipPos, const Plane plane);
 		static bool IsVertexVisible(const Vec4& clipPos);
+		static bool IsInsideTriangle(float(&weights)[3]);
 
 		static float GetIntersectRatio(const Vec4& prev, const Vec4& curr, const Plane plane);
+		static BoundingBox GetBoundingBox(const Vec4(&fragCoords)[3], const int width, const int height);
+		static void CalculateWeights(float(&screenWeights)[3], float(&weights)[3], const Vec4(&fragCoords)[3], const Vec2& screenPoint);
 
 		template<typename varyings_t>
 		static void LerpVaryings(varyings_t& out,
@@ -150,7 +160,93 @@ namespace RTL {
 			return vertexNum;
 		}
 
+		template<typename varyings_t>
+		static void CaculateNdcPos(varyings_t(&varyings)[RTL_MAX_VARYINGS], const int vertexNum)
+		{
+			for (int i = 0; i < vertexNum; i++)
+			{
+				float w = varyings[i].ClipPos.W;
+				varyings[i].NdcPos = varyings[i].ClipPos / w;
+				varyings[i].NdcPos.W = 1.0f / w;
+			}
+		}
+
+		template<typename varyings_t>
+		static void CaculateFragPos(varyings_t(&varyings)[RTL_MAX_VARYINGS],
+			const int vertexNum,
+			const float width,
+			const float height) {
+
+			for (int i = 0; i < vertexNum; i++)
+			{
+				float x = ((varyings[i].NdcPos.X + 1.0f) * 0.5f * width);
+				float y = ((varyings[i].NdcPos.Y + 1.0f) * 0.5f * height);
+				float z = (varyings[i].NdcPos.Z + 1.0f) * 0.5f;
+				float w = varyings[i].NdcPos.W;
+
+				varyings[i].FragPos.X = x;
+				varyings[i].FragPos.Y = y;
+				varyings[i].FragPos.Z = z;
+				varyings[i].FragPos.W = w;
+			}
+		}
 		
+		template<typename vertex_t, typename uniforms_t, typename varyings_t>
+		static void ProcessPixel(Framebuffer& framebuffer,
+			const int x, const int y,
+			const Program<vertex_t, uniforms_t, varyings_t>& program,
+			const varyings_t& varyings,
+			const uniforms_t& uniforms) {
+
+			bool discard = false;
+			Vec4 color = { 0.0f, 0.0f, 0.0f, 0.0f };
+			color = program.FragmentShader(discard, varyings, uniforms);
+			if (discard) return;
+
+			color.X = Clamp(color.X, 0.0f, 1.0f);
+			color.Y = Clamp(color.Y, 0.0f, 1.0f);
+			color.Z = Clamp(color.Z, 0.0f, 1.0f);
+			color.W = Clamp(color.W, 0.0f, 1.0f);
+
+			framebuffer.SetColor(x, y, color);
+		}
+
+		template<typename vertex_t, typename uniforms_t, typename varyings_t>
+		static void RasterizeTriangle(Framebuffer& framebuffer,
+			const Program<vertex_t, uniforms_t, varyings_t>& program,
+			const varyings_t(&varyings)[3],
+			const uniforms_t& uniforms) {
+
+
+			int fWidth = framebuffer.GetWidth();
+			int fHeight = framebuffer.GetHeight();
+
+			Vec4 fragCoords[3];
+			fragCoords[0] = varyings[0].FragPos;
+			fragCoords[1] = varyings[1].FragPos;
+			fragCoords[2] = varyings[2].FragPos;
+			BoundingBox bBox = GetBoundingBox(fragCoords, fWidth, fHeight);
+
+			for (int y = bBox.MinY; y <= bBox.MaxY; y++) {
+				for (int x = bBox.MinX; x <= bBox.MaxX; x++) {
+					float screenWeights[3];
+					float weights[3];
+					Vec2 screenPoint{ (float)x + 0.5f, (float)y + 0.5f };
+
+					CalculateWeights(screenWeights, weights, fragCoords, screenPoint);
+					if(!IsInsideTriangle(weights))
+						continue;
+
+					varyings_t pixVaryings;
+					LerpVaryings(pixVaryings, varyings, weights, fWidth, fHeight);
+
+					ProcessPixel(framebuffer, x, y, program, pixVaryings, uniforms);
+					
+				}
+			}
+
+		}
+
     public:
 
 		template<typename vertex_t, typename uniforms_t, typename varyings_t>
@@ -161,6 +257,20 @@ namespace RTL {
 				program.VertexShader(varyings[i], triangle[i], uniforms);
 
 			int vertexNum = Clip(varyings);
+
+			CaculateNdcPos(varyings, vertexNum);
+			int fWidth = framebuffer.GetWidth();
+			int fHeight = framebuffer.GetHeight();
+			CaculateFragPos(varyings, vertexNum, (float)fWidth, (float)fHeight);
+
+			for (int i = 0; i < vertexNum - 2; i++) {
+				varyings_t triVaryings[3];
+				triVaryings[0] = varyings[0];
+				triVaryings[1] = varyings[i + 1];
+				triVaryings[2] = varyings[i + 2];
+
+				RasterizeTriangle(framebuffer, program, triVaryings, uniforms);
+			}
 
 		}
 

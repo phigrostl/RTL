@@ -10,6 +10,8 @@ namespace RTL {
 
 	struct VaryingsBase {
 		Vec4 ClipPos = Vec4(0, 0, 0, 1);
+		Vec4 NdcPos = Vec4(0, 0, 0, 1);
+		Vec4 FragPos = Vec4(0, 0, 0, 1);
 	};
 
 	struct UniformsBase {

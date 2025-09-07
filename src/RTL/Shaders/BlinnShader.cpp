@@ -6,4 +6,13 @@ namespace RTL {
 		varyings.ClipPos = uniforms.MVP * vertex.ModelPos;
 	}
 
+	Vec4 BlinnFragmentShader(bool& discard, const BlinnVaryings& varyings, const BlinnUniforms& uniforms) {
+        discard = false;
+		return {
+			varyings.NdcPos.X * 0.5f + 0.5f,
+			varyings.NdcPos.Y * 0.5f + 0.5f,
+			1.0f, 1.0f
+		};
+	}
+
 }

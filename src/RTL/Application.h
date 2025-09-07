@@ -30,7 +30,7 @@ namespace RTL {
 
 		std::chrono::steady_clock::time_point m_LastFrameTime;
 
-		Program<BlinnVertex, BlinnUniforms, BlinnVaryings> m_Program{ BlinnVertexShader };
+		Program<BlinnVertex, BlinnUniforms, BlinnVaryings> m_Program{ BlinnVertexShader, BlinnFragmentShader };
 		BlinnUniforms m_Uniforms;
 
 	};
