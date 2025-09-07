@@ -14,8 +14,23 @@ namespace RTL {
 		Triangle() = default;
 	};
 
+	enum class DepthFuncType {
+		LESS,
+		LEQUAL,
+		ALWAYS,
+	};
+
 	template<typename vertex_t, typename uniforms_t, typename varyings_t>
 	struct Program {
+
+		bool EnableDoubleSided = false;
+
+		bool EnableDepthTest = true;
+		bool EnableWriteDepth = true;
+
+		bool EnableBlend = true;
+
+		DepthFuncType DepthFunc = DepthFuncType::LESS;
 
 		using vertex_shader_t = void (*)(varyings_t&, const vertex_t&, const uniforms_t&);
 		vertex_shader_t VertexShader;
@@ -45,6 +60,7 @@ namespace RTL {
 		static bool IsInsidePlane(const Vec4& clipPos, const Plane plane);
 		static bool IsVertexVisible(const Vec4& clipPos);
 		static bool IsInsideTriangle(float(&weights)[3]);
+		static bool PassDepthTest(const float weiteDepth, const float fDepth, const DepthFuncType depthFunc);
 
 		static float GetIntersectRatio(const Vec4& prev, const Vec4& curr, const Plane plane);
 		static BoundingBox GetBoundingBox(const Vec4(&fragCoords)[3], const int width, const int height);
@@ -84,18 +100,6 @@ namespace RTL {
 			out.FragPos.Y = ((out.NdcPos.Y + 1.0f) / 2.0f) * height;
 			out.FragPos.Z = (out.NdcPos.Z + 1.0f) / 2.0f;
 			out.FragPos.W = out.NdcPos.W;
-
-			constexpr uint32_t floatOffset = sizeof(Vec4) * 3 / sizeof(float);
-			constexpr uint32_t floatNum = sizeof(varyings_t) / sizeof(float);
-			float* v0 = (float*)&varyings[0];
-			float* v1 = (float*)&varyings[1];
-			float* v2 = (float*)&varyings[2];
-			float* outFloat = (float*)&out;
-
-			for (int i = floatOffset; i < (int)floatNum; i++)
-				outFloat[i] = v0[i] * weights[0] +
-				v1[i] * weights[1] +
-				v2[i] * weights[2];
 
 		}
 
@@ -190,7 +194,15 @@ namespace RTL {
 				varyings[i].FragPos.W = w;
 			}
 		}
-		
+
+		template<typename varyings_t>
+		static bool IsBackFacing(const varyings_t(&fragCoords)[3]) {
+			float signedArea = fragCoords[0].NdcPos.X * fragCoords[1].NdcPos.Y - fragCoords[0].NdcPos.Y * fragCoords[1].NdcPos.X +
+				fragCoords[1].NdcPos.X * fragCoords[2].NdcPos.Y - fragCoords[1].NdcPos.Y * fragCoords[2].NdcPos.X +
+				fragCoords[2].NdcPos.X * fragCoords[0].NdcPos.Y - fragCoords[2].NdcPos.Y * fragCoords[0].NdcPos.X;
+			return signedArea <= 0.0f;
+		}
+
 		template<typename vertex_t, typename uniforms_t, typename varyings_t>
 		static void ProcessPixel(Framebuffer& framebuffer,
 			const int x, const int y,
@@ -208,7 +220,19 @@ namespace RTL {
 			color.Z = Clamp(color.Z, 0.0f, 1.0f);
 			color.W = Clamp(color.W, 0.0f, 1.0f);
 
+			if (program.EnableBlend) {
+				Vec3 dstColor = framebuffer.GetColor(x, y);
+				Vec3 srcColor = color;
+				float alpha = color.W;
+				color = { Lerp(dstColor, srcColor, alpha), 1.0f };
+			}
+
 			framebuffer.SetColor(x, y, color);
+
+			if (program.EnableWriteDepth) {
+				float depth = varyings.FragPos.Z;
+				framebuffer.SetDepth(x, y, depth);
+			}
 		}
 
 		template<typename vertex_t, typename uniforms_t, typename varyings_t>
@@ -217,6 +241,11 @@ namespace RTL {
 			const varyings_t(&varyings)[3],
 			const uniforms_t& uniforms) {
 
+
+			if (!program.EnableDoubleSided) {
+				bool isBackFacing = IsBackFacing(varyings);
+				if (isBackFacing) return;
+			}
 
 			int fWidth = framebuffer.GetWidth();
 			int fHeight = framebuffer.GetHeight();
@@ -239,6 +268,14 @@ namespace RTL {
 
 					varyings_t pixVaryings;
 					LerpVaryings(pixVaryings, varyings, weights, fWidth, fHeight);
+
+					if (program.EnableDepthTest) {
+						float depth = pixVaryings.FragPos.Z;
+						float fDepth = framebuffer.GetDepth(x, y);
+						DepthFuncType depthFunc = program.DepthFunc;
+						if (!PassDepthTest(depth, fDepth, depthFunc))
+							continue;
+					}
 
 					ProcessPixel(framebuffer, x, y, program, pixVaryings, uniforms);
 					

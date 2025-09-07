@@ -12,6 +12,19 @@ namespace RTL {
         return weights[0] >= -EPSILON && weights[1] >= -EPSILON && weights[2] >= -EPSILON;
     }
 
+    bool Renderer::PassDepthTest(const float writeDepth, const float fDepth, const DepthFuncType depthFunc) {
+        switch (depthFunc) {
+        case DepthFuncType::LESS:
+            return fDepth - writeDepth > EPSILON;
+        case DepthFuncType::LEQUAL:
+            return fDepth - writeDepth >= EPSILON;
+        case DepthFuncType::ALWAYS:
+            return true;
+        default:
+            return false;
+        }
+    }
+
     bool Renderer::IsInsidePlane(const Vec4& clipPos, const Plane plane) {
         switch (plane)
         {
