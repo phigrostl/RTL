@@ -41,6 +41,19 @@ namespace RTL {
 
 	void Application::OnUpdate(float time) {
 		m_Framebuffer.Clear();
+		if (m_Window->GetKey(RTL_KEY_0))
+			printf("0\n");
+
+		Triangle<BlinnVertex> tri;
+
+		tri[0].ModelPos = { -10.0f, 10.0f, -10.0f, 1.0f };
+		tri[1].ModelPos = { -10.0f, -10.0f, -10.0f, 1.0f };
+		tri[2].ModelPos = { 30.0f, -10.0f, -10.0f, 1.0f };
+
+		m_Uniforms.MVP = Mat4Perspective(PI / 2, 1.0f, 1.0f, 10.0f);
+
+		Renderer::Draw(m_Framebuffer, m_Program, tri, m_Uniforms);
+
 		m_Window->DrawFramebuffer(m_Framebuffer);
 	}
 

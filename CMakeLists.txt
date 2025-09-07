@@ -22,4 +22,12 @@ add_executable (RTL
 	"src/RTL/Base/Maths.cpp"
 
 	"src/RTL/Window/InputCodes.h"
+
+	"src/RTL/Shaders/ShaderBase.h"
+	
+	"src/RTL/Renderer/Renderer.h"
+	"src/RTL/Renderer/Renderer.cpp"
+
+	"src/RTL/Shaders/BlinnShader.h"
+	"src/RTL/Shaders/BlinnShader.cpp"
 )

@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include "Window/Window.h"
+#include "Renderer/Renderer.h"
+#include "Shaders/BlinnShader.h"
 
 #include <string>
 #include <chrono>
@@ -27,6 +29,10 @@ namespace RTL {
 		Framebuffer m_Framebuffer{ m_Width, m_Height };
 
 		std::chrono::steady_clock::time_point m_LastFrameTime;
+
+		Program<BlinnVertex, BlinnUniforms, BlinnVaryings> m_Program{ BlinnVertexShader };
+		BlinnUniforms m_Uniforms;
+
 	};
 
 }
