@@ -1,4 +1,4 @@
-# Prerequisites
+﻿# Prerequisites
 *.d
 
 # Compiled Object files
@@ -39,3 +39,6 @@
 
 # debug information files
 *.dwo
+
+out
+.vs
