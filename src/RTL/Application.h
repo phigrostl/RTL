@@ -1,4 +1,6 @@
-#pragma once
+﻿#pragma once
+
+#include "RTL/Window/Window.h"
 
 #include <string>
 
@@ -25,7 +27,7 @@ namespace RTL {
 		std::string m_Name;
 		int m_Width, m_Height;
 
-		bool m_Running;
+		Window* m_Window;
 	};
 
 }

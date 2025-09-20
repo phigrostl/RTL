@@ -6,4 +6,5 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 add_executable(RTL 
 	"src/RTL/Main.cpp"
 	"src/RTL/Application.cpp"
+	"src/RTL/Window/Window.cpp"
 )

@@ -1,4 +1,4 @@
-#include "Application.h"
+﻿#include "Application.h"
 
 namespace RTL {
 
@@ -16,15 +16,17 @@ namespace RTL {
 	}
 
 	void Application::Init() {
-		m_Running = true;
+		Window::Init();
+		m_Window = Window::Create(m_Name, m_Width, m_Height);
 	}
 
 	void Application::Terminate() {
-
+		delete m_Window;
+		Window::Terminate();
 	}
 
 	void Application::Run() {
-		while (m_Running) {
+		while (!m_Window->Closed()) {
 			OnUpdate();
 		}
 	}
