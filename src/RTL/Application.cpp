@@ -18,6 +18,7 @@ namespace RTL {
 	void Application::Init() {
 		Window::Init();
 		m_Window = Window::Create(m_Name, m_Width, m_Height);
+		m_Framebuffer = Framebuffer::Create(m_Width, m_Height);
 	}
 
 	void Application::Terminate() {
@@ -27,6 +28,8 @@ namespace RTL {
 
 	void Application::Run() {
 		while (!m_Window->Closed()) {
+			m_Framebuffer->Clear();
+			m_Framebuffer->ClearDepth();
 			m_Window->PollInputEvents();
 
 			OnUpdate();
@@ -34,8 +37,7 @@ namespace RTL {
 	}
 
 	void Application::OnUpdate() {
-		if (m_Window->GetKey(RTL_KEY_0))
-			printf("Key 0 pressed\n");
+		m_Window->DrawFramebuffer(m_Framebuffer);
 	}
 
 }

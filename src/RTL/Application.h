@@ -28,6 +28,7 @@ namespace RTL {
 		int m_Width, m_Height;
 
 		Window* m_Window;
+		Framebuffer* m_Framebuffer;
 	};
 
 }

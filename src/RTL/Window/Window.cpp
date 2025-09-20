@@ -95,6 +95,32 @@ namespace RTL {
 		ReleaseDC(m_Handle, windowDC);
 	}
 
+	void Window::DrawFramebuffer(Framebuffer* framebuffer) {
+		const int fWidth = framebuffer->GetWidth();
+		const int fHeight = framebuffer->GetHeight();
+		const int width = m_Width < fWidth ? m_Width : fWidth;
+		const int height = m_Height < fHeight ? m_Height : fHeight;
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				constexpr int channelCount = 3;
+				constexpr int rChannel = 2;
+				constexpr int gChannel = 1;
+				constexpr int bChannel = 0;
+
+				Vec3 color = framebuffer->GetColor(j, fHeight - i - 1);
+				const int pixStart = (i * width + j) * channelCount;
+				const int rIndex = pixStart + rChannel;
+				const int gIndex = pixStart + gChannel;
+				const int bIndex = pixStart + bChannel;
+
+				m_Buffer[rIndex] = Float2UChar(color.X);
+				m_Buffer[gIndex] = Float2UChar(color.Y);
+				m_Buffer[bIndex] = Float2UChar(color.Z);
+			}
+		}
+		Show();
+	}
+
 	LRESULT CALLBACK Window::WndProc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM lParam) {
 		Window* window = (Window*)GetProp(hWnd, RTL_WINDOW_ENTRY_NAME);
 		if (window == nullptr)

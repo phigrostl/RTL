@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "RTL/Window/Framebuffer.h"
 #include "RTL/Base/Base.h"
 #include "RTL/Window/InputCode.h"
 
@@ -18,6 +19,7 @@ namespace RTL {
 		static Window* Create(const std::string title, int width, int height);
 
 		void Show();
+		void DrawFramebuffer(Framebuffer* framebuffer);
 
 		bool Closed() const { return m_Closed; }
 		char GetKey(const uint32_t index) const { return m_Keys[index]; }
@@ -28,6 +30,7 @@ namespace RTL {
 		static LRESULT CALLBACK WndProc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM lParam);
 
 		static void PollInputEvents();
+
 
 	protected:
 		std::string m_Title;
@@ -41,6 +44,7 @@ namespace RTL {
 		unsigned char* m_Buffer;
 
 		static bool s_Inited;
+
 	};
 
 }
