@@ -27,12 +27,15 @@ namespace RTL {
 
 	void Application::Run() {
 		while (!m_Window->Closed()) {
+			m_Window->PollInputEvents();
+
 			OnUpdate();
 		}
 	}
 
 	void Application::OnUpdate() {
-
+		if (m_Window->GetKey(RTL_KEY_0))
+			printf("Key 0 pressed\n");
 	}
 
 }

@@ -47,6 +47,8 @@ namespace RTL {
 		ReleaseDC(m_Handle, windowDC);
 
 		Show();
+
+		memset(m_Keys, RTL_RELEASE, RTL_KEY_MAX_COUNT);
 	}
 
 	Window::~Window() {
@@ -102,8 +104,22 @@ namespace RTL {
 			case WM_DESTROY:
 				window->m_Closed = true;
 				return 0;
+			case WM_KEYDOWN:
+				window->m_Keys[wParam] = RTL_PRESS;
+				return 0;
+			case WM_KEYUP:
+				window->m_Keys[wParam] = RTL_RELEASE;
+				return 0;
 		}
 		return DefWindowProc(hWnd, msgID, wParam, lParam);
+	}
+
+	void Window::PollInputEvents() {
+		MSG message;
+		while (PeekMessage(&message, NULL, 0, 0, PM_REMOVE)) {
+			TranslateMessage(&message);
+			DispatchMessage(&message);
+		}
 	}
 
 	Window* Window::Create(const std::string title, int width, int height) {
