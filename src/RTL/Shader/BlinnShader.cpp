@@ -8,7 +8,7 @@ namespace RTL {
 
 	Vec4 BlinnFragmentShader(bool& discard, const BlinnVaryings& varyings, const BlinnUniforms& uniforms) {
 		discard = false;
-		return { varyings.NdcPos.X / 2 + 0.5f, varyings.NdcPos.Y / 2 + 0.5f, 0.0f, 1.0f };
+		return { varyings.NdcPos.Z / 2 + 0.5f, 1.0f, 1.0f, 1.0f };
 	}
 
 }

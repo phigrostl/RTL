@@ -67,15 +67,23 @@ namespace RTL {
 		}
 
 		template <typename varyings_t>
-		static void LerpVaryings(varyings_t& out, const varyings_t(&varyings)[3], const float(&weights)[3]) {
-            constexpr uint32_t floatNum = sizeof(varyings_t) / sizeof(float);
+		static void LerpVaryings(varyings_t& out, const varyings_t(&varyings)[3], const float(&weights)[3], const int width, const int height) {
+            
+			out.ClipPos = varyings[0].ClipPos * weights[0] + varyings[1].ClipPos * weights[1] + varyings[2].ClipPos * weights[2];
+			out.NdcPos = out.ClipPos / out.ClipPos.W;
+			out.NdcPos.W = 1.0f / out.ClipPos.W;
+
+			out.FragPos.X = ((out.NdcPos.X + 1.0f) / 2.0f) * width;
+			out.FragPos.Y = ((out.NdcPos.Y + 1.0f) / 2.0f) * height;
+			out.FragPos.Z = (out.NdcPos.Z + 1.0f) / 2.0f;
+			out.FragPos.W = 1.0f;
+
+			constexpr uint32_t floatOffset = sizeof(Vec4) * 3 / sizeof(float);
+			constexpr uint32_t floatNum = sizeof(varyings_t) / sizeof(float);
 			float* v0 = (float*)&varyings[0];
 			float* v1 = (float*)&varyings[1];
 			float* v2 = (float*)&varyings[2];
 			float* outFloat = (float*)&out;
-
-			for (uint32_t i = 0; i < (int)floatNum; i++)
-				outFloat[i] = v0[i] * weights[0] + v1[i] * weights[1] + v2[i] * weights[2];
 		}
 
 		template<typename varyings_t>
@@ -200,7 +208,7 @@ namespace RTL {
 						continue;
 
 					varyings_t pixVaryings;
-					LerpVaryings(pixVaryings, varyings, weights);
+					LerpVaryings(pixVaryings, varyings, weights, (int)width, (int)height);
 
 					ProcessPixel(framebuffer, x, y, program, pixVaryings, uniforms);
 				}
