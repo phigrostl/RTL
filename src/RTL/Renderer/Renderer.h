@@ -20,11 +20,13 @@ namespace RTL {
 	template<typename vertex_t, typename uniforms_t, typename varyings_t>
 	struct Program {
 		using vertex_shader_t = void (*)(varyings_t&, const vertex_t&, const uniforms_t&);
-
 		vertex_shader_t VertexShader;
 
-		Program(const vertex_shader_t vertexShader)
-			: VertexShader(vertexShader) {}
+		using fragment_shader_t = Vec4(*)(bool& discard, const varyings_t&, const uniforms_t&);
+		fragment_shader_t FragmentShader;
+
+		Program(const vertex_shader_t vertexShader, const fragment_shader_t fragmentShader)
+			: VertexShader(vertexShader), FragmentShader(fragmentShader) {}
 	};
 
 	class Renderer {
@@ -40,6 +42,20 @@ namespace RTL {
 			NEGATIVE_Z
 		};
 
+		struct BoundingBox { int MinX, MaxX, MinY, MaxY; };
+
+		static bool IsVertexVisible(const Vec4& clipPos);
+		static bool IsInsidePlane(const Vec4& clipPos, const Plane plane);
+		static bool IsInsideTriangle(float(&weights)[3]);
+
+		static float GetIntersectRatio(const Vec4& prev, const Vec4& curr, const Plane plane);
+		static BoundingBox GetBoundingBox(const Vec4(&fragCoord)[3], const int width, const int height);
+		
+		static void CalculateWeights(float(&screenWeights)[3],
+									 float(&weights)[3],
+									 const Vec4(&fragCoord)[3],
+									 const Vec2&screenPoint);
+
 		template <typename varyings_t>
 		static void LerpVaryings(varyings_t& out, const varyings_t& start, const varyings_t& end, float ratio) {
 			constexpr uint32_t floatNum = sizeof(varyings_t) / sizeof(float);
@@ -50,50 +66,16 @@ namespace RTL {
 				outFloat[i] = Lerp(startFloat[i], endFloat[i], ratio);
 		}
 
-		static bool IsVertexVisible(const Vec4& clipPos) {
-			return std::fabs(clipPos.X) <= clipPos.W && std::fabs(clipPos.Y) <= clipPos.W && std::fabs(clipPos.Z) <= clipPos.W;
-		}
+		template <typename varyings_t>
+		static void LerpVaryings(varyings_t& out, const varyings_t(&varyings)[3], const float(&weights)[3]) {
+            constexpr uint32_t floatNum = sizeof(varyings_t) / sizeof(float);
+			float* v0 = (float*)&varyings[0];
+			float* v1 = (float*)&varyings[1];
+			float* v2 = (float*)&varyings[2];
+			float* outFloat = (float*)&out;
 
-		static bool IsInsidePlane(const Vec4& clipPos, const Plane plane) {
-			switch (plane) {
-			case Plane::POSITIVE_W:
-				return clipPos.W >= 0.0f;
-			case Plane::POSITIVE_X:
-				return clipPos.X <= clipPos.W;
-			case Plane::NEGATIVE_X:
-				return clipPos.X >= -clipPos.W;
-			case Plane::POSITIVE_Y:
-				return clipPos.Y <= clipPos.W;
-			case Plane::NEGATIVE_Y:
-				return clipPos.Y >= -clipPos.W;
-			case Plane::POSITIVE_Z:
-				return clipPos.Z <= clipPos.W;
-			case Plane::NEGATIVE_Z:
-				return clipPos.Z >= -clipPos.W;
-			default:
-				return false;
-			}
-		}
-
-		static float GetIntersectRatio(const Vec4& prev, const Vec4& curr, const Plane plane) {
-			switch (plane) {
-			case Plane::POSITIVE_W:
-				return (prev.W - 0.0f) / (prev.W - curr.W);
-			case Plane::POSITIVE_X:
-				return (prev.W - prev.X) / ((prev.W - prev.X) - (curr.W - curr.X));
-			case Plane::NEGATIVE_X:
-				return (prev.W + prev.X) / ((prev.W + prev.X) - (curr.W + curr.X));
-			case Plane::POSITIVE_Y:
-				return (prev.W - prev.Y) / ((prev.W - prev.Y) - (curr.W - curr.Y));
-			case Plane::NEGATIVE_Y:
-				return (prev.W + prev.Y) / ((prev.W + prev.Y) - (curr.W + curr.Y));
-			case Plane::POSITIVE_Z:
-				return (prev.W - prev.Z) / ((prev.W - prev.Z) - (curr.W - curr.Z));
-			case Plane::NEGATIVE_Z:
-				return (prev.W + prev.Z) / ((prev.W + prev.Z) - (curr.W + curr.Z));
-			default:
-				return 0.0f;
-			}
+			for (uint32_t i = 0; i < (int)floatNum; i++)
+				outFloat[i] = v0[i] * weights[0] + v1[i] * weights[1] + v2[i] * weights[2];
 		}
 
 		template<typename varyings_t>
@@ -180,19 +162,47 @@ namespace RTL {
 		}
 
 		template<typename vertex_t, typename uniforms_t, typename varyings_t>
+		static void ProcessPixel(Framebuffer* framebuffer, const int x, const int y,
+			const Program<vertex_t, uniforms_t, varyings_t>& program,
+			const varyings_t& varyings, const uniforms_t& uniforms) {
+
+			bool discard = false;
+			Vec4 color{ 0.0f };
+			color = program.FragmentShader(discard, varyings, uniforms);
+			if (discard) return;
+			color.X = Clamp(color.X, 0.0f, 1.0f);
+			color.Y = Clamp(color.Y, 0.0f, 1.0f);
+			color.Z = Clamp(color.Z, 0.0f, 1.0f);
+			color.W = Clamp(color.W, 0.0f, 1.0f);
+
+			framebuffer->SetColor(x, y, color);
+		}
+
+		template<typename vertex_t, typename uniforms_t, typename varyings_t>
 		static void RasterizeTriangle(Framebuffer* framebuffer,
 									  const Program<vertex_t, uniforms_t, varyings_t>& program,
 									  const varyings_t(&varyings)[3],
 									  const uniforms_t& uniforms) {
 
-			for (int i = -3; i < 3; i++) {
-				int x = (int)varyings[i].FragPos.X;
-				int y = (int)varyings[i].FragPos.Y;
+			Vec4 fragCoord[3] = { varyings[0].FragPos, varyings[1].FragPos, varyings[2].FragPos };
+			float width = (float)framebuffer->GetWidth();
+			float height = (float)framebuffer->GetHeight();
+			BoundingBox bbox = GetBoundingBox(fragCoord, (int)width, (int)height);
 
-				for (int j = -5; j < 5; j++) {
-					for (int k = -5; k < 5; k++) {
-						framebuffer->SetColor(x + j, y + k, { 1.0f, 1.0f, 1.0f });
-					}
+			for (int y = bbox.MinY; y < bbox.MaxY; y++) {
+				for (int x = bbox.MinX; x < bbox.MaxX; x++) {
+					float screenWeights[3];
+					float weights[3];
+					Vec2 screenPoint = { (float)x + 0.5f, (float)y + 0.5f };
+
+					CalculateWeights(screenWeights, weights, fragCoord, screenPoint);
+					if (!IsInsideTriangle(weights))
+						continue;
+
+					varyings_t pixVaryings;
+					LerpVaryings(pixVaryings, varyings, weights);
+
+					ProcessPixel(framebuffer, x, y, program, pixVaryings, uniforms);
 				}
 			}
 		}

@@ -37,7 +37,7 @@ namespace RTL {
 	}
 
 	void Application::OnUpdate() {
-		Program<BlinnVertex, BlinnUniforms, BlinnVaryings> program(BlinnVertexShader);
+		Program<BlinnVertex, BlinnUniforms, BlinnVaryings> program(BlinnVertexShader, BlinnFragmentShader);
 		Triangle<BlinnVertex> tri;
 		tri[0].ModelPos = { -10.0f, 10.0f, -10.0f, 1.0f };
 		tri[1].ModelPos = { -10.0f, -10.0f, -10.0f, 1.0f };

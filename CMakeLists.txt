@@ -10,4 +10,5 @@ add_executable(RTL
 	"src/RTL/Window/Framebuffer.cpp"
 	"src/RTL/Base/Maths.cpp"
 	"src/RTL/Shader/BlinnShader.cpp"
+	"src/RTL/Renderer/Renderer.cpp"
 )
