@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include "RTL/Window/Window.h"
+#include "RTL/Renderer/Renderer.h"
+#include "RTL/Shader/BlinnShader.h"
 
 #include <string>
 
