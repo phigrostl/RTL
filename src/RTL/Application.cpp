@@ -52,7 +52,7 @@ namespace RTL {
 		if (m_Window->GetKey(RTL_KEY_D))
 			m_Camera.Pos = m_Camera.Pos + m_Camera.Right * speed * time;
 
-		constexpr float rotateSpeed = 0.01f;
+		constexpr float rotateSpeed = 0.001f;
 		Mat4 rotation = Mat4Identity();
 		if (m_Window->GetKey(RTL_KEY_Q))
 			rotation = Mat4RotateY(rotateSpeed * time);

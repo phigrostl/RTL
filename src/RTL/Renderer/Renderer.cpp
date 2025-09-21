@@ -31,6 +31,13 @@ namespace RTL {
 		return weights[0] >= -EPSILON && weights[1] >= -EPSILON && weights[2] >= -EPSILON;
 	}
 
+	bool Renderer::IsBackFacing(const Vec4& a, const Vec4& b, const Vec4& c) {
+		float signedArea = a.X * b.Y - a.Y * b.X +
+						   b.X * c.Y - b.Y * c.X +
+						   c.X * a.Y - c.Y * a.X;
+		return signedArea <= 0.0f;
+	}
+
 	float Renderer::GetIntersectRatio(const Vec4& prev, const Vec4& curr, const Plane plane) {
 		switch (plane) {
 		case Plane::POSITIVE_W:

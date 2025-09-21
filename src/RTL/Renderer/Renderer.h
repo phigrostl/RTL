@@ -19,6 +19,9 @@ namespace RTL {
 
 	template<typename vertex_t, typename uniforms_t, typename varyings_t>
 	struct Program {
+
+		bool EnableDoubleSided = false;
+
 		using vertex_shader_t = void (*)(varyings_t&, const vertex_t&, const uniforms_t&);
 		vertex_shader_t VertexShader;
 
@@ -47,6 +50,7 @@ namespace RTL {
 		static bool IsVertexVisible(const Vec4& clipPos);
 		static bool IsInsidePlane(const Vec4& clipPos, const Plane plane);
 		static bool IsInsideTriangle(float(&weights)[3]);
+		static bool IsBackFacing(const Vec4& a, const Vec4& b, const Vec4& c);
 
 		static float GetIntersectRatio(const Vec4& prev, const Vec4& curr, const Plane plane);
 		static BoundingBox GetBoundingBox(const Vec4(&fragCoord)[3], const int width, const int height);
@@ -191,6 +195,12 @@ namespace RTL {
 									  const Program<vertex_t, uniforms_t, varyings_t>& program,
 									  const varyings_t(&varyings)[3],
 									  const uniforms_t& uniforms) {
+
+			if (!program.EnableDoubleSided) {
+				bool isBackFacing = false;
+				isBackFacing = IsBackFacing(varyings[0].NdcPos, varyings[1].NdcPos, varyings[2].NdcPos);
+				if (isBackFacing) return;
+			}
 
 			Vec4 fragCoord[3] = { varyings[0].FragPos, varyings[1].FragPos, varyings[2].FragPos };
 			float width = (float)framebuffer->GetWidth();
