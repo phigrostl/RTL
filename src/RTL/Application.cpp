@@ -39,9 +39,9 @@ namespace RTL {
 	void Application::OnUpdate() {
 		Program<BlinnVertex, BlinnUniforms, BlinnVaryings> program(BlinnVertexShader);
 		Triangle<BlinnVertex> tri;
-		tri.Vertex[0].ModelPos = { -10.0f, 10.0f, -10.0f, 1.0f };
-		tri.Vertex[1].ModelPos = { -10.0f, -10.0f, -10.0f, 1.0f };
-		tri.Vertex[2].ModelPos = { 30.0f, -10.0f, -10.0f, 1.0f };
+		tri[0].ModelPos = { -10.0f, 10.0f, -10.0f, 1.0f };
+		tri[1].ModelPos = { -10.0f, -10.0f, -10.0f, 1.0f };
+		tri[2].ModelPos = { 30.0f, -10.0f, -10.0f, 1.0f };
 		BlinnUniforms uniforms;
 		uniforms.MVP = Mat4Perspective(PI / 2.0f, 1.0f, 1.0f, 10.0f);
 

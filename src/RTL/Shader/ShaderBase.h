@@ -9,6 +9,8 @@ namespace RTL {
 
 	struct VaryingsBase {
 		Vec4 ClipPos = Vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		Vec4 NdcPos = Vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		Vec4 FragPos = Vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	};
 
 	struct UniformsBase {
