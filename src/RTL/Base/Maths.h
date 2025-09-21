@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include <vector>
 
 namespace RTL {
 
@@ -131,4 +132,6 @@ namespace RTL {
 
     float Max(const float right, const float left);
     float Min(const float right, const float left);
+
+    std::vector<size_t> GetNumbersFromString(std::string str);
 }

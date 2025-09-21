@@ -38,6 +38,19 @@ namespace RTL {
 		return signedArea <= 0.0f;
 	}
 
+	bool Renderer::PassDepthTest(const float writeDepth, const float fDepth, const DepthFuncType depthFuncType) {
+		switch (depthFuncType) {
+		case DepthFuncType::LESS:
+			return fDepth - writeDepth > EPSILON;
+		case DepthFuncType::LEQUAL:
+			return fDepth - writeDepth >= EPSILON;
+		case DepthFuncType::ALWAYS:
+			return true;
+		default:
+			return false;
+		}
+	}
+
 	float Renderer::GetIntersectRatio(const Vec4& prev, const Vec4& curr, const Plane plane) {
 		switch (plane) {
 		case Plane::POSITIVE_W:

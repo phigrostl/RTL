@@ -285,4 +285,19 @@ namespace RTL {
         return std::min<float>(right, left);
     }
 
+    std::vector<size_t> GetNumbersFromString(std::string str) {
+        std::vector<size_t> numbers;
+        for (size_t i = 0; i < str.size(); i++) {
+            if (str[i] >= '0' && str[i] <= '9') {
+                if (i == 0)
+                    numbers.push_back((float)(str[i] - '0'));
+                else if ((str[i - 1] >= '0' && str[i - 1] <= '9'))
+                    numbers.back() = numbers.back() * 10 + (str[i] - '0');
+                else
+                    numbers.push_back((float)(str[i] - '0'));
+            }
+        }
+        return numbers;
+    }
+
 }

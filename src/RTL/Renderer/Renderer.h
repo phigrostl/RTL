@@ -17,10 +17,21 @@ namespace RTL {
 		Triangle() = default;
 	};
 
+	enum class DepthFuncType {
+		LESS,
+		LEQUAL,
+		ALWAYS
+	};
+
 	template<typename vertex_t, typename uniforms_t, typename varyings_t>
 	struct Program {
 
 		bool EnableDoubleSided = false;
+		bool EnableDepthTest = true;
+		bool EnableWriteDepth = true;
+		bool EnableBlend = true;
+
+        DepthFuncType DepthFunc = DepthFuncType::LESS;
 
 		using vertex_shader_t = void (*)(varyings_t&, const vertex_t&, const uniforms_t&);
 		vertex_shader_t VertexShader;
@@ -51,6 +62,7 @@ namespace RTL {
 		static bool IsInsidePlane(const Vec4& clipPos, const Plane plane);
 		static bool IsInsideTriangle(float(&weights)[3]);
 		static bool IsBackFacing(const Vec4& a, const Vec4& b, const Vec4& c);
+		static bool PassDepthTest(const float writeDepth, const float fDepth, const DepthFuncType depthFuncType);
 
 		static float GetIntersectRatio(const Vec4& prev, const Vec4& curr, const Plane plane);
 		static BoundingBox GetBoundingBox(const Vec4(&fragCoord)[3], const int width, const int height);
@@ -88,6 +100,9 @@ namespace RTL {
 			float* v1 = (float*)&varyings[1];
 			float* v2 = (float*)&varyings[2];
 			float* outFloat = (float*)&out;
+
+			for (uint32_t i = 0; i < (int)floatNum; i++)
+				outFloat[i] = v0[i] * weights[0] + v1[i] * weights[1] + v2[i] * weights[2];
 		}
 
 		template<typename varyings_t>
@@ -187,7 +202,15 @@ namespace RTL {
 			color.Z = Clamp(color.Z, 0.0f, 1.0f);
 			color.W = Clamp(color.W, 0.0f, 1.0f);
 
+			if (program.EnableBlend)
+				color = { Lerp(framebuffer->GetColor(x, y), color, color.W), 1.0f };
+
 			framebuffer->SetColor(x, y, color);
+
+			if (program.EnableWriteDepth) {
+				float depth = varyings.NdcPos.Z;
+				framebuffer->SetDepth(x, y, depth);
+			}
 		}
 
 		template<typename vertex_t, typename uniforms_t, typename varyings_t>
@@ -219,6 +242,13 @@ namespace RTL {
 
 					varyings_t pixVaryings;
 					LerpVaryings(pixVaryings, varyings, weights, (int)width, (int)height);
+
+					if (program.EnableDepthTest) {
+						float depth = pixVaryings.NdcPos.Z;
+						float fDepth = framebuffer->GetDepth(x, y);
+						DepthFuncType depthFunc = program.DepthFunc;
+						if (!PassDepthTest(depth, fDepth, depthFunc)) continue;
+					}
 
 					ProcessPixel(framebuffer, x, y, program, pixVaryings, uniforms);
 				}

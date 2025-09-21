@@ -1,11 +1,14 @@
 ﻿#pragma once
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "RTL/Window/Window.h"
 #include "RTL/Renderer/Renderer.h"
 #include "RTL/Shader/BlinnShader.h"
 
 #include <chrono>
 #include <string>
+#include <fstream>
 
 namespace RTL {
 
@@ -35,6 +38,8 @@ namespace RTL {
 		void OnCameraUpdate(float time);
 		void OnUpdate(float time);
 
+		void LoadMesh(const char* fileName);
+
 	private:
 		std::string m_Name;
 		int m_Width, m_Height;
@@ -44,6 +49,10 @@ namespace RTL {
 		Framebuffer* m_Framebuffer;
 
 		Camera m_Camera;
+		std::vector<Triangle<BlinnVertex>> m_Mesh;
+
+		BlinnUniforms m_Uniforms;
+		Program<BlinnVertex, BlinnUniforms, BlinnVaryings> m_Program{ BlinnVertexShader, BlinnFragmentShader };
 	};
 
 }
