@@ -121,11 +121,19 @@ namespace RTL {
 		Show();
 	}
 
+	void Window::SetMsg(Window* window, UINT msgID, const WPARAM wParam, const LPARAM lParam) {
+		window->m_Msg = msgID;
+		if (msgID == WM_MOUSEMOVE) {
+			window->m_MouseX = LOWORD(lParam);
+			window->m_MouseY = HIWORD(lParam);
+		}
+	}
+
 	LRESULT CALLBACK Window::WndProc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM lParam) {
 		Window* window = (Window*)GetProp(hWnd, RTL_WINDOW_ENTRY_NAME);
 		if (window == nullptr)
 			return DefWindowProc(hWnd, msgID, wParam, lParam);
-
+		SetMsg(window, msgID, wParam, lParam);
 		switch (msgID) {
 			case WM_DESTROY:
 				window->m_Closed = true;
@@ -135,6 +143,18 @@ namespace RTL {
 				return 0;
 			case WM_KEYUP:
 				window->m_Keys[wParam] = RTL_RELEASE;
+				return 0;
+			case WM_LBUTTONUP:
+				window->m_Keys[RTL_BUTTON_LEFT] = RTL_RELEASE;
+				return 0;
+			case WM_LBUTTONDOWN:
+				window->m_Keys[RTL_BUTTON_LEFT] = RTL_PRESS;
+				return 0;
+			case WM_RBUTTONUP:
+				window->m_Keys[RTL_BUTTON_RIGHT] = RTL_RELEASE;
+				return 0;
+			case WM_RBUTTONDOWN:
+				window->m_Keys[RTL_BUTTON_RIGHT] = RTL_PRESS;
 				return 0;
 		}
 		return DefWindowProc(hWnd, msgID, wParam, lParam);

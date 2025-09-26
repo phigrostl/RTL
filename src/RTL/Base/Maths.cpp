@@ -213,6 +213,38 @@ namespace RTL {
         return m;
     }
 
+    Mat4 Mat4RotateAxis(const Vec3& axis, float angle)
+    {
+        Vec3 n = Normalize(axis);
+        float x = n.X, y = n.Y, z = n.Z;
+        float c = cos(angle);
+        float s = sin(angle);
+        float t = 1 - c;
+
+        Mat4 m;
+        m.M[0][0] = t * x * x + c;
+        m.M[0][1] = t * x * y - s * z;
+        m.M[0][2] = t * x * z + s * y;
+        m.M[0][3] = 0;
+
+        m.M[1][0] = t * x * y + s * z;
+        m.M[1][1] = t * y * y + c;
+        m.M[1][2] = t * y * z - s * x;
+        m.M[1][3] = 0;
+
+        m.M[2][0] = t * x * z - s * y;
+        m.M[2][1] = t * y * z + s * x;
+        m.M[2][2] = t * z * z + c;
+        m.M[2][3] = 0;
+
+        m.M[3][0] = 0;
+        m.M[3][1] = 0;
+        m.M[3][2] = 0;
+        m.M[3][3] = 1;
+
+        return m;
+    }
+
     Vec3 Normalize(const Vec3& v) {
         float len = (float)std::sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z);
         ASSERT((len != 0));
@@ -290,11 +322,11 @@ namespace RTL {
         for (size_t i = 0; i < str.size(); i++) {
             if (str[i] >= '0' && str[i] <= '9') {
                 if (i == 0)
-                    numbers.push_back((float)(str[i] - '0'));
+                    numbers.push_back(str[i] - (size_t)'0');
                 else if ((str[i - 1] >= '0' && str[i - 1] <= '9'))
-                    numbers.back() = numbers.back() * 10 + (str[i] - '0');
+                    numbers.back() = numbers.back() * 10 + (str[i] - (size_t)'0');
                 else
-                    numbers.push_back((float)(str[i] - '0'));
+                    numbers.push_back(str[i] - (size_t)'0');
             }
         }
         return numbers;

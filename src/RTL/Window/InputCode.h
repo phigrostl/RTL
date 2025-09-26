@@ -113,7 +113,7 @@
 #define RTL_KEY_KP_ADD             334
 #define RTL_KEY_KP_ENTER           335
 #define RTL_KEY_KP_EQUAL           336
-#define RTL_KEY_LEFT_SHIFT         340
+#define RTL_KEY_LEFT_SHIFT         16
 #define RTL_KEY_LEFT_CONTROL       341
 #define RTL_KEY_LEFT_ALT           342
 #define RTL_KEY_LEFT_SUPER         343
@@ -123,8 +123,6 @@
 #define RTL_KEY_RIGHT_SUPER        347
 #define RTL_KEY_MENU               348
 #define RTL_KEY_MAX_COUNT          512
-
-
 
 #define RTL_BUTTON_LEFT            0
 #define RTL_BUTTON_RIGHT           1

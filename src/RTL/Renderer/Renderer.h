@@ -208,7 +208,7 @@ namespace RTL {
 			framebuffer->SetColor(x, y, color);
 
 			if (program.EnableWriteDepth) {
-				float depth = varyings.NdcPos.Z;
+				float depth = varyings.ClipPos.Z;
 				framebuffer->SetDepth(x, y, depth);
 			}
 		}
@@ -244,7 +244,7 @@ namespace RTL {
 					LerpVaryings(pixVaryings, varyings, weights, (int)width, (int)height);
 
 					if (program.EnableDepthTest) {
-						float depth = pixVaryings.NdcPos.Z;
+						float depth = pixVaryings.ClipPos.Z;
 						float fDepth = framebuffer->GetDepth(x, y);
 						DepthFuncType depthFunc = program.DepthFunc;
 						if (!PassDepthTest(depth, fDepth, depthFunc)) continue;

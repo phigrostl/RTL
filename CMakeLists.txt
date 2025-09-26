@@ -13,4 +13,7 @@ add_executable(RTL
 	"src/RTL/Base/Maths.cpp"
 	"src/RTL/Shader/BlinnShader.cpp"
 	"src/RTL/Renderer/Renderer.cpp"
+	"src/RTL/Shader/Texture.cpp"
+
+	"src/RTL/stb/stb_image.cpp"
 )

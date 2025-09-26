@@ -114,6 +114,7 @@ namespace RTL {
     }
     Mat4 Mat4Perspective(const float fovy, const float aspect, const float near, const float far);
     Mat4 Mat4LookAt(const Vec3& eye, const Vec3& target, const Vec3& up);
+    Mat4 Mat4RotateAxis(const Vec3& axis, float angle);
 
     float Lerp(const float start, const float end, const float t);
     Vec3 Lerp(const Vec3& start, const Vec3& end, const float t);

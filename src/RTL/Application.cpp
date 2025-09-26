@@ -21,7 +21,10 @@ namespace RTL {
 		m_Framebuffer = Framebuffer::Create(m_Width, m_Height);
 		m_Camera.Aspect = (float)m_Width / (float)m_Height;
 		m_Program.EnableDoubleSided = true;
-		LoadMesh("../../../assets/DepthTest.obj");
+		LoadMesh("../../../assets/H.obj");
+
+		m_Uniforms.Diffuse = new Texture("../../../assets/H.png");
+		m_Uniforms.Specular = new Texture("../../../assets/boxSpecularStrength.png");
 	}
 
 	void Application::Terminate() {
@@ -32,7 +35,7 @@ namespace RTL {
 	void Application::Run() {
 		while (!m_Window->Closed()) {
 			m_Framebuffer->Clear();
-			m_Framebuffer->ClearDepth();
+			m_Framebuffer->ClearDepth(m_Camera.Far);
 			m_Window->PollInputEvents();
 
 			float deltaTime = (std::chrono::steady_clock::now() - m_LastFrameTime).count() * 0.001f * 0.001f;
@@ -46,33 +49,76 @@ namespace RTL {
 
 	void Application::OnCameraUpdate(float time) {
 		constexpr float speed = 0.001f;
-		if (m_Window->GetKey(RTL_KEY_W))
-			m_Camera.Pos = m_Camera.Pos + m_Camera.Dir * speed * time;
-		if (m_Window->GetKey(RTL_KEY_S))
-			m_Camera.Pos = m_Camera.Pos - m_Camera.Dir * speed * time;
-		if (m_Window->GetKey(RTL_KEY_A))
-			m_Camera.Pos = m_Camera.Pos - m_Camera.Right * speed * time;
-		if (m_Window->GetKey(RTL_KEY_D))
-			m_Camera.Pos = m_Camera.Pos + m_Camera.Right * speed * time;
+		Vec3 NorDir = Normalize({ m_Camera.Dir.X, 0.0f, m_Camera.Dir.Z });
+		Vec3 NorRight = Normalize({ m_Camera.Right.X, 0.0f, m_Camera.Right.Z });
+		if (m_Window->GetKey(RTL_KEY_W) == RTL_PRESS)
+			m_Camera.Pos = m_Camera.Pos + Vec4(NorDir, m_Camera.Dir.W) * time * speed;
+		if (m_Window->GetKey(RTL_KEY_S) == RTL_PRESS)
+			m_Camera.Pos = m_Camera.Pos - Vec4(NorDir, m_Camera.Dir.W) * time * speed;
+		if (m_Window->GetKey(RTL_KEY_A) == RTL_PRESS)
+			m_Camera.Pos = m_Camera.Pos - Vec4(NorRight, m_Camera.Right.W) * time * speed;
+		if (m_Window->GetKey(RTL_KEY_D) == RTL_PRESS)
+			m_Camera.Pos = m_Camera.Pos + Vec4(NorRight, m_Camera.Right.W) * time * speed;
+		if (m_Window->GetKey(RTL_KEY_SPACE) == RTL_PRESS)
+			m_Camera.Pos.Y += time * speed;
+		if (m_Window->GetKey(RTL_KEY_LEFT_SHIFT) == RTL_PRESS)
+			m_Camera.Pos.Y -= time * speed;
 
-		constexpr float rotateSpeed = 0.001f;
+		if (m_Window->GetKey(RTL_KEY_Z) == RTL_PRESS)
+			m_Camera.Fov = Clamp(m_Camera.Fov + speed * time * 0.01f, 0, PI * 2);
+		if (m_Window->GetKey(RTL_KEY_X) == RTL_PRESS)
+			m_Camera.Fov = Clamp(m_Camera.Fov - speed * time * 0.01f, 0, PI * 2);
+	}
+
+	bool isPress = false;
+	Vec2 ori_L;
+
+	void RotateCamera(Camera& camera, Vec3 Ang) {
+
 		Mat4 rotation = Mat4Identity();
-		if (m_Window->GetKey(RTL_KEY_Q))
-			rotation = Mat4RotateY(rotateSpeed * time);
-		if (m_Window->GetKey(RTL_KEY_E))
-			rotation = Mat4RotateY(-rotateSpeed * time);
-		m_Camera.Dir = rotation * m_Camera.Dir;
-		m_Camera.Right = rotation * m_Camera.Right;
+		if (Ang.Y != 0.0f)
+			rotation = Mat4RotateY(Ang.Y) * rotation;
+
+		if (Ang.X != 0.0f)
+			rotation = Mat4RotateAxis(camera.Right, Ang.X) * rotation;
+
+		if (Ang.Z != 0.0f)
+			rotation = Mat4RotateAxis(camera.Dir, Ang.Z) * rotation;
+
+		camera.Dir = rotation * camera.Dir;
+		camera.Right = rotation * camera.Right;
+		camera.Right = { Normalize(camera.Right), 0.0f };
 	}
 
 	void Application::OnUpdate(float time) {
 		OnCameraUpdate(time);
 
 		Mat4 view = Mat4LookAt(m_Camera.Pos, m_Camera.Pos + m_Camera.Dir, m_Camera.Up);
-		Mat4 proj = Mat4Perspective(PI / 2.0f, m_Camera.Aspect, 0.1f, 100.0f);
+		Mat4 proj = Mat4Perspective(m_Camera.Fov, m_Camera.Aspect, m_Camera.Near, m_Camera.Far);
+
+		if (!isPress && m_Window->GetKey(RTL_BUTTON_LEFT) == RTL_PRESS) {
+			ori_L = Vec2((float)m_Window->GetMouseX(), (float)m_Window->GetMouseY());
+			isPress = true;
+		}
+		else if (m_Window->GetKey(RTL_BUTTON_LEFT) == RTL_PRESS && isPress) {
+			Vec2 now_L = Vec2((float)m_Window->GetMouseX(), (float)m_Window->GetMouseY());
+			Vec2 delta = now_L - ori_L;
+			float ax = delta.X / m_Width * PI * 2;
+			float ay = delta.Y / m_Height * PI;
+			float rotateSpeed = 0.5;
+			RotateCamera(m_Camera, Vec3(-ay, -ax, 0.0f));
+			ori_L = now_L;
+		}
+		else if (isPress) {
+			isPress = false;
+		}
 
 		Mat4 model = Mat4Identity();
 		m_Uniforms.MVP = proj * view * model;
+		m_Uniforms.CameraPos = m_Camera.Pos;
+		m_Uniforms.Model = model;
+		m_Uniforms.ModelNormalWorld = Mat4Identity();
+		m_Uniforms.Shininess = 128;
 
 		for (int i = 0; i < m_Mesh.size(); i++) {
 			Renderer::Draw(m_Framebuffer, m_Program, m_Mesh[i], m_Uniforms);
