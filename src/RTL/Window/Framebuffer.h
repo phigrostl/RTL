@@ -23,8 +23,13 @@ namespace RTL {
 		void ClearDepth(const float depth = 1.0f);
 
 		void LoadFontTTF(const std::string& fontPath);
+		// short
 		void DrawCharTTF(int x, int y, char c, const Vec3& color, float fontSize);
 		void DrawTextTTF(int x, int y, const std::string& text, const Vec3& color, float fontSize);
+
+		// wide
+		void DrawWCharTTF(int x, int y, wchar_t c, const Vec3& color, float fontSize);
+		void DrawWTextTTF(int x, int y, const std::wstring& text, const Vec3& color, float fontSize);
 
 		static Framebuffer* Create(const int width, const int height);
 

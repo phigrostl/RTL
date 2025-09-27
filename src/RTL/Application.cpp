@@ -18,11 +18,21 @@ namespace RTL {
 	void Application::Init() {
 		Window::Init();
 		m_Window = Window::Create(m_Name, m_Width, m_Height);
+
 		m_Framebuffer = Framebuffer::Create(m_Width, m_Height);
-		m_Framebuffer->LoadFontTTF("../../../assets/arial.ttf");
+		m_Framebuffer->LoadFontTTF("C:\\Windows\\Fonts\\simhei.ttf");
+
 		m_Camera.Aspect = (float)m_Width / (float)m_Height;
-		m_Uniforms.Diffuse = new Texture("../../../assets/H.png");
+
+		m_Uniforms.Diffuse = new Texture("../../../assets/Test.png");
 		m_Uniforms.EnableLerpTexture = false;
+
+		m_Uniforms.Lights.push_back(Light());
+		m_Uniforms.Lights[0].Position = Vec3(0, 1, -2);
+		m_Uniforms.Lights[0].Diffuse = Vec3(0.5, 0.5, 0.5);
+		m_Uniforms.Lights[0].Specular = Vec3(0.5, 0.5, 0.5);
+		m_Uniforms.Lights[0].Strength = 1.0f;
+
 		LoadMesh("../../../assets/H.obj");
 	}
 
@@ -127,8 +137,9 @@ namespace RTL {
 		int x = m_Window->GetMouseX();
 		int y = m_Window->GetMouseY();
 		float depth = m_Framebuffer->GetDepth(x, m_Height - y - 1);
+		float c = (depth - m_Camera.Near) / (m_Camera.Far - m_Camera.Near) / 2 + 0.5f;
 
-		m_Framebuffer->DrawTextTTF(0, 0, "Depth: " + std::to_string(depth), Vec3(1.0f, 1.0f, 1.0f), 36);
+		m_Framebuffer->DrawTextTTF(0, 0, std::to_string(depth).c_str(), Vec3(c, 1.0f, 1.0f), 16);
 
 	}
 

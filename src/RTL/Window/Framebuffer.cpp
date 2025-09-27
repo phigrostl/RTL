@@ -67,6 +67,7 @@ namespace RTL {
         stbtt_InitFont(&m_FontInfo, m_fontBuffer.data(), 0);
 	}
 
+	// short
 	void Framebuffer::DrawCharTTF(int x, int y, char c, const Vec3& color, float fontSize) {
 		unsigned char* bitmap;
 		int w, h, xoff, yoff;
@@ -74,12 +75,16 @@ namespace RTL {
 
 		bitmap = stbtt_GetCodepointBitmap(&m_FontInfo, 0, scale, c, &w, &h, &xoff, &yoff);
 
+		int ascent, descent, lineGap;;
+		stbtt_GetFontVMetrics(&m_FontInfo, &ascent, &descent, &lineGap);
+		int baseline = int(ascent * scale);
+
 		for (int j = 0; j < h; j++) {
 			for (int i = 0; i < w; i++) {
 				float alpha = bitmap[i + j * w] / 255.0f;
 				if (alpha > 0.1f) {
 					Vec3 col = color * alpha;
-					SetColor(x + i + xoff, m_Height - (y + j + yoff), col);
+					SetColor(x + i + xoff, m_Height - (y + j + yoff + baseline), col);
 				}
 			}
 		}
@@ -89,14 +94,53 @@ namespace RTL {
 	void Framebuffer::DrawTextTTF(int x, int y, const std::string& text, const Vec3& color, float fontSize) {
 		float scale = stbtt_ScaleForPixelHeight(&m_FontInfo, fontSize);
 		int xpos = x;
-		int ascent, descent, lineGap;;
-		stbtt_GetFontVMetrics(&m_FontInfo, &ascent, &descent, &lineGap);
-		int baseline = int(ascent * scale);
+		
 		for (char c : text) {
 			int ax;
 			int lsb;
 			stbtt_GetCodepointHMetrics(&m_FontInfo, c, &ax, &lsb);
-			DrawCharTTF(xpos, y + baseline, c, color, fontSize);
+			DrawCharTTF(xpos, y, c, color, fontSize);
+			int kern = stbtt_GetCodepointKernAdvance(&m_FontInfo, c, c);
+			xpos += int(ax * scale) + kern;
+		}
+	}
+
+	// wide
+	void Framebuffer::DrawWCharTTF(int x, int y, wchar_t c, const Vec3& color, float fontSize) {
+		int w, h, xoff, yoff;
+		float scale = stbtt_ScaleForPixelHeight(&m_FontInfo, fontSize);
+
+		unsigned char* bitmap = stbtt_GetCodepointBitmap(
+			&m_FontInfo, 0, scale, c, &w, &h, &xoff, &yoff);
+
+		for (int j = 0; j < h; j++) {
+			for (int i = 0; i < w; i++) {
+				float alpha = bitmap[i + j * w] / 255.0f;
+				if (alpha > 0.1f) {
+					int px = x + i + xoff;
+					int py = m_Height - (y + j + yoff);
+					if (px >= 0 && px < m_Width && py >= 0 && py < m_Height) {
+						Vec3 dst = GetColor(px, py);
+						Vec3 blended = color * alpha + dst * (1.0f - alpha);
+						SetColor(px, py, blended);
+					}
+				}
+			}
+		}
+		stbtt_FreeBitmap(bitmap, nullptr);
+	}
+
+	void Framebuffer::DrawWTextTTF(int x, int y, const std::wstring& text, const Vec3& color, float fontSize) {
+		float scale = stbtt_ScaleForPixelHeight(&m_FontInfo, fontSize);
+		int xpos = x;
+		int ascent, descent, lineGap;;
+		stbtt_GetFontVMetrics(&m_FontInfo, &ascent, &descent, &lineGap);
+		int baseline = int(ascent * scale);
+		for (wchar_t c : text) {
+			int ax;
+			int lsb;
+			stbtt_GetCodepointHMetrics(&m_FontInfo, c, &ax, &lsb);
+			DrawWCharTTF(xpos, y + baseline, c, color, fontSize);
 			int kern = stbtt_GetCodepointKernAdvance(&m_FontInfo, c, c);
 			xpos += int(ax * scale) + kern;
 		}

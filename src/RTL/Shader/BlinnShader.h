@@ -5,6 +5,13 @@
 
 namespace RTL {
 
+	struct Light {
+		Vec3 Position = Vec3(0.0f, 0.0f, 0.0f);
+		Vec3 Diffuse = Vec3(0.5f, 0.5f, 0.5f);
+		Vec3 Specular = Vec3(1.0f, 1.0f, 1.0f);
+		float Strength = 1.0f;
+	};
+
 	struct BlinnVertex : public VertexBase {
 		Vec3 ModelNormal;
 		Vec2 TexCoord = Vec2(0.0f, 0.0f);
@@ -19,12 +26,9 @@ namespace RTL {
 	struct BlinnUniforms : public UniformsBase {
 		Mat4 Model;
 		Mat4 ModelNormalWorld;
-		Vec3 LightPos = Vec3(0.0f, 1.0f, 2.0f);
-		Vec3 LightAmbient = Vec3(0.3f, 0.3f, 0.3f);
-		Vec3 LightDiffuse = Vec3(0.5f, 0.5f, 0.5f);
-		Vec3 LightSpecular = Vec3(1.0f, 1.0f, 1.0f);
-		Vec3 ObjectColor = Vec3(1.0f, 1.0f, 1.0f);
+		Vec3 Ambient = Vec3(0.7f, 0.7f, 0.7f);
 		Vec3 CameraPos;
+		std::vector<Light> Lights;
 
 		float Shininess = 3.0f;
 
