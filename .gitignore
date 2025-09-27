@@ -1,4 +1,4 @@
-﻿# Prerequisites
+# Prerequisites
 *.d
 
 # Compiled Object files
@@ -32,7 +32,6 @@
 *.lib
 
 # Executables
-*.exe
 *.out
 *.app
 
@@ -41,3 +40,4 @@
 
 out
 .vs
+*-Debug

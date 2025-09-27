@@ -1,0 +1,14 @@
+# ninja log v5
+39	638	7806608798252804	CMakeFiles/RTL.dir/src/RTL/stb/stb_truetype.cpp.obj	74230256b4170b38
+24	863	7806608800535671	CMakeFiles/RTL.dir/src/RTL/Shader/BlinnShader.cpp.obj	efcf0bac1721535f
+49	873	7806608800645604	CMakeFiles/RTL.dir/src/RTL/Shader/Texture.cpp.obj	638c764e5b04a3bc
+34	905	7806608800965424	CMakeFiles/RTL.dir/src/RTL/Renderer/Renderer.cpp.obj	6bddeb24b9b39b53
+44	966	7806608801565099	CMakeFiles/RTL.dir/src/RTL/stb/stb_image.cpp.obj	a858989276752d75
+29	976	7806608801695026	CMakeFiles/RTL.dir/src/RTL/Base/Maths.cpp.obj	4cf599ece7430f7
+2	1021	7806608802134755	CMakeFiles/RTL.dir/src/RTL/Window/Framebuffer.cpp.obj	16a1b495fe7c9c25
+8	1356	7806608805473568	CMakeFiles/RTL.dir/src/RTL/Window/Window.cpp.obj	c6957590adb18d07
+19	1435	7806608806263118	CMakeFiles/RTL.dir/src/RTL/Main.cpp.obj	bd422c13095bd85a
+13	1819	7806608810079296	CMakeFiles/RTL.dir/src/RTL/Application.cpp.obj	8153ad4c049f665f
+1819	2446	7806608816376014	RTL.exe	b6fbeba604e7f399
+4	1890	7806609183717018	CMakeFiles/RTL.dir/src/RTL/Application.cpp.obj	8153ad4c049f665f
+1891	2107	7806609185918181	RTL.exe	b6fbeba604e7f399

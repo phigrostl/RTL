@@ -1,6 +1,8 @@
 #pragma once
 
 #include "RTL/Base/Maths.h"
+
+#include <Windows.h>
 #include <stb_image/stb_truetype.h>
 #include <fstream>
 
@@ -22,12 +24,13 @@ namespace RTL {
 		void Clear(const Vec3& color = Vec3(0.0f, 0.0f, 0.0f));
 		void ClearDepth(const float depth = 1.0f);
 
-		void LoadFontTTF(const std::string& fontPath);
 		// short
+		void LoadFontTTF(const std::string& fontPath);
 		void DrawCharTTF(int x, int y, char c, const Vec3& color, float fontSize);
 		void DrawTextTTF(int x, int y, const std::string& text, const Vec3& color, float fontSize);
 
 		// wide
+		void LoadWFontTTF(const std::wstring& fontPath);
 		void DrawWCharTTF(int x, int y, wchar_t c, const Vec3& color, float fontSize);
 		void DrawWTextTTF(int x, int y, const std::wstring& text, const Vec3& color, float fontSize);
 

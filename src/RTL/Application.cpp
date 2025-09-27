@@ -20,11 +20,11 @@ namespace RTL {
 		m_Window = Window::Create(m_Name, m_Width, m_Height);
 
 		m_Framebuffer = Framebuffer::Create(m_Width, m_Height);
-		m_Framebuffer->LoadFontTTF("C:\\Windows\\Fonts\\simhei.ttf");
+		m_Framebuffer->LoadFontTTF("simhei");
 
 		m_Camera.Aspect = (float)m_Width / (float)m_Height;
 
-		m_Uniforms.Diffuse = new Texture("../../../assets/Test.png");
+		m_Uniforms.Diffuse = new Texture("../../assets/H.png");
 		m_Uniforms.EnableLerpTexture = false;
 
 		m_Uniforms.Lights.push_back(Light());
@@ -33,7 +33,7 @@ namespace RTL {
 		m_Uniforms.Lights[0].Specular = Vec3(0.5, 0.5, 0.5);
 		m_Uniforms.Lights[0].Strength = 1.0f;
 
-		LoadMesh("../../../assets/H.obj");
+		LoadMesh("../../assets/H.obj");
 	}
 
 	void Application::Terminate() {
@@ -78,9 +78,26 @@ namespace RTL {
 			m_Camera.Pos.Y -= time * speed;
 
 		if (m_Window->GetKey(RTL_KEY_Z) == RTL_PRESS)
-			m_Camera.Fov = Clamp(m_Camera.Fov + speed * time * 0.01f, 0, PI * 2);
+			m_Camera.Fov = Clamp(m_Camera.Fov + speed * time * 0.1f, 0, PI * 2);
 		if (m_Window->GetKey(RTL_KEY_X) == RTL_PRESS)
-			m_Camera.Fov = Clamp(m_Camera.Fov - speed * time * 0.01f, 0, PI * 2);
+			m_Camera.Fov = Clamp(m_Camera.Fov - speed * time * 0.1f, 0, PI * 2);
+
+		if (!isPress && m_Window->GetKey(RTL_BUTTON_LEFT) == RTL_PRESS) {
+			oriL = Vec2((float)m_Window->GetMouseX(), (float)m_Window->GetMouseY());
+			isPress = true;
+		}
+		else if (m_Window->GetKey(RTL_BUTTON_LEFT) == RTL_PRESS && isPress) {
+			Vec2 nowL = Vec2((float)m_Window->GetMouseX(), (float)m_Window->GetMouseY());
+			Vec2 delta = nowL - oriL;
+			float ax = delta.X / m_Width * PI * 2;
+			float ay = delta.Y / m_Height * PI;
+			float rotateSpeed = 0.5;
+			RotateCamera(m_Camera, Vec3(-ay, -ax, 0.0f));
+			oriL = nowL;
+		}
+		else if (isPress) {
+			isPress = false;
+		}
 	}
 
 	void Application::RotateCamera(Camera& camera, Vec3 Ang) {
@@ -106,23 +123,6 @@ namespace RTL {
 		Mat4 view = Mat4LookAt(m_Camera.Pos, m_Camera.Pos + m_Camera.Dir, m_Camera.Up);
 		Mat4 proj = Mat4Perspective(m_Camera.Fov, m_Camera.Aspect, m_Camera.Near, m_Camera.Far);
 
-		if (!isPress && m_Window->GetKey(RTL_BUTTON_LEFT) == RTL_PRESS) {
-			oriL = Vec2((float)m_Window->GetMouseX(), (float)m_Window->GetMouseY());
-			isPress = true;
-		}
-		else if (m_Window->GetKey(RTL_BUTTON_LEFT) == RTL_PRESS && isPress) {
-			Vec2 nowL = Vec2((float)m_Window->GetMouseX(), (float)m_Window->GetMouseY());
-			Vec2 delta = nowL - oriL;
-			float ax = delta.X / m_Width * PI * 2;
-			float ay = delta.Y / m_Height * PI;
-			float rotateSpeed = 0.5;
-			RotateCamera(m_Camera, Vec3(-ay, -ax, 0.0f));
-			oriL = nowL;
-		}
-		else if (isPress) {
-			isPress = false;
-		}
-
 		Mat4 model = Mat4Identity();
 		m_Uniforms.MVP = proj * view * model;
 		m_Uniforms.CameraPos = m_Camera.Pos;
@@ -130,7 +130,7 @@ namespace RTL {
 		m_Uniforms.ModelNormalWorld = Mat4Identity();
 		m_Uniforms.Shininess = 128;
 
-		for (int i = 0; i < m_Mesh.size(); i++) {
+		for (size_t i = 0; i < m_Mesh.size(); i++) {
 			Renderer::Draw(m_Framebuffer, m_Program, m_Mesh[i], m_Uniforms);
 		}
 		

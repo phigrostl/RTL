@@ -59,15 +59,18 @@ namespace RTL {
 			m_DepthBuffer[i] = depth;
 	}
 
+	// short
 	void Framebuffer::LoadFontTTF(const std::string& fontPath) {
 		std::ifstream file(fontPath, std::ios::binary);
-		if (!file) return;
+		if (!file) {
+			file.open("C:\\Windows\\Fonts\\" + fontPath + ".ttf", std::ios::binary);
+			if (!file) return;
+		}
 		m_fontBuffer = std::vector<unsigned char>((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 		file.close();
         stbtt_InitFont(&m_FontInfo, m_fontBuffer.data(), 0);
 	}
 
-	// short
 	void Framebuffer::DrawCharTTF(int x, int y, char c, const Vec3& color, float fontSize) {
 		unsigned char* bitmap;
 		int w, h, xoff, yoff;
@@ -106,6 +109,17 @@ namespace RTL {
 	}
 
 	// wide
+	void Framebuffer::LoadWFontTTF(const std::wstring& fontPath) {
+		std::wifstream file(fontPath, std::ios::binary);
+		if (!file) {
+			file.open(L"C:\\Windows\\Fonts\\" + fontPath + L".ttf", std::ios::binary);
+			if (!file) return;
+		}
+		m_fontBuffer = std::vector<unsigned char>((std::istreambuf_iterator<wchar_t>(file)), std::istreambuf_iterator<wchar_t>());
+		file.close();
+		stbtt_InitFont(&m_FontInfo, m_fontBuffer.data(), 0);
+	}
+
 	void Framebuffer::DrawWCharTTF(int x, int y, wchar_t c, const Vec3& color, float fontSize) {
 		int w, h, xoff, yoff;
 		float scale = stbtt_ScaleForPixelHeight(&m_FontInfo, fontSize);
