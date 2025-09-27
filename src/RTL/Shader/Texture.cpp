@@ -77,31 +77,43 @@ namespace RTL {
 		}
 	}
 
-	Vec4 Texture::Sample(Vec2 texCoords) const {
-		float vx = Clamp(texCoords.X, 0.0f, 1.0f);
-		float vy = Clamp(texCoords.Y, 0.0f, 1.0f);
+	Vec4 Texture::Sample(Vec2 texCoords, bool EnableLerp) const {
+		if (!EnableLerp) {
+			float vx = Clamp(texCoords.X, 0.0f, 1.0f);
+			float vy = Clamp(texCoords.Y, 0.0f, 1.0f);
 
-		float fx = vx * (m_Width - 1);
-		float fy = vy * (m_Height - 1);
+			int x = (int)(vx * (m_Width - 1) + 0.5f);
+			int y = (int)(vy * (m_Height - 1) + 0.5f);
 
-		int x0 = (int)fx;
-		int y0 = (int)fy;
-		int x1 = (int)Clamp((float)x0 + 1.0f, 0.0f, (float)m_Width - 1.0f);
-		int y1 = (int)Clamp((float)y0 + 1.0f, 0.0f, (float)m_Height - 1.0f);
+			int index = x + y * m_Width;
+			return m_Data[index];
+		}
+		else {
+			float vx = Clamp(texCoords.X, 0.0f, 1.0f);
+			float vy = Clamp(texCoords.Y, 0.0f, 1.0f);
 
-		float dx = fx - x0;
-		float dy = fy - y0;
+			float fx = vx * (m_Width - 1);
+			float fy = vy * (m_Height - 1);
 
-		Vec4 c00 = m_Data[x0 + y0 * m_Width];
-		Vec4 c10 = m_Data[x1 + y0 * m_Width];
-		Vec4 c01 = m_Data[x0 + y1 * m_Width];
-		Vec4 c11 = m_Data[x1 + y1 * m_Width];
+			int x0 = (int)fx;
+			int y0 = (int)fy;
+			int x1 = (int)Clamp((float)x0 + 1.0f, 0.0f, (float)m_Width - 1.0f);
+			int y1 = (int)Clamp((float)y0 + 1.0f, 0.0f, (float)m_Height - 1.0f);
 
-		Vec4 c0 = c00 * (1 - dx) + c10 * dx;
-		Vec4 c1 = c01 * (1 - dx) + c11 * dx;
-		Vec4 c = c0 * (1 - dy) + c1 * dy;
+			float dx = fx - x0;
+			float dy = fy - y0;
 
-		return c;
+			Vec4 c00 = m_Data[x0 + y0 * m_Width];
+			Vec4 c10 = m_Data[x1 + y0 * m_Width];
+			Vec4 c01 = m_Data[x0 + y1 * m_Width];
+			Vec4 c11 = m_Data[x1 + y1 * m_Width];
+
+			Vec4 c0 = c00 * (1 - dx) + c10 * dx;
+			Vec4 c1 = c01 * (1 - dx) + c11 * dx;
+			Vec4 c = c0 * (1 - dy) + c1 * dy;
+
+			return c;
+		}
 	}
 
 }

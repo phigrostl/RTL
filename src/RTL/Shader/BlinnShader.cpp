@@ -26,11 +26,11 @@ namespace RTL {
 
 		const Vec2& texCoord = varyings.TexCoord;
 		if (uniforms.Diffuse) {
-			diffColor = uniforms.Diffuse->Sample(texCoord);
+			diffColor = uniforms.Diffuse->Sample(texCoord, uniforms.EnableLerpTexture);
 			ambient = ambient * diffColor;
 		}
 		if (uniforms.Specular)
-			specularStrength = uniforms.Specular->Sample(texCoord);
+			specularStrength = uniforms.Specular->Sample(texCoord, uniforms.EnableLerpTexture);
 
 		Vec3 diffuse = std::max(0.0f, Dot(worldNormal, lightDir)) * uniforms.LightDiffuse * diffColor;
 		Vec3 specular = (float)std::pow(std::max(0.0f, Dot(worldNormal, halfDir)), uniforms.Shininess) * uniforms.LightSpecular * specularStrength;

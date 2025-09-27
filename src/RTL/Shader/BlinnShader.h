@@ -26,10 +26,12 @@ namespace RTL {
 		Vec3 ObjectColor = Vec3(1.0f, 1.0f, 1.0f);
 		Vec3 CameraPos;
 
-		float Shininess = 32.0f;
+		float Shininess = 3.0f;
 
 		Texture* Diffuse = nullptr;
 		Texture* Specular = nullptr;
+
+		bool EnableLerpTexture = true;
 	};
 
 	void BlinnVertexShader(BlinnVaryings& varyings, const BlinnVertex& vertex, const BlinnUniforms& uniforms);

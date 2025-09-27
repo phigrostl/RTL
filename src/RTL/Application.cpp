@@ -20,11 +20,9 @@ namespace RTL {
 		m_Window = Window::Create(m_Name, m_Width, m_Height);
 		m_Framebuffer = Framebuffer::Create(m_Width, m_Height);
 		m_Camera.Aspect = (float)m_Width / (float)m_Height;
-		m_Program.EnableDoubleSided = true;
-		LoadMesh("../../../assets/H.obj");
+		LoadMesh("../../../assets/box.obj");
 
-		m_Uniforms.Diffuse = new Texture("../../../assets/H.png");
-		m_Uniforms.Specular = new Texture("../../../assets/boxSpecularStrength.png");
+		
 	}
 
 	void Application::Terminate() {
@@ -70,10 +68,7 @@ namespace RTL {
 			m_Camera.Fov = Clamp(m_Camera.Fov - speed * time * 0.01f, 0, PI * 2);
 	}
 
-	bool isPress = false;
-	Vec2 ori_L;
-
-	void RotateCamera(Camera& camera, Vec3 Ang) {
+	void Application::RotateCamera(Camera& camera, Vec3 Ang) {
 
 		Mat4 rotation = Mat4Identity();
 		if (Ang.Y != 0.0f)
@@ -97,17 +92,17 @@ namespace RTL {
 		Mat4 proj = Mat4Perspective(m_Camera.Fov, m_Camera.Aspect, m_Camera.Near, m_Camera.Far);
 
 		if (!isPress && m_Window->GetKey(RTL_BUTTON_LEFT) == RTL_PRESS) {
-			ori_L = Vec2((float)m_Window->GetMouseX(), (float)m_Window->GetMouseY());
+			oriL = Vec2((float)m_Window->GetMouseX(), (float)m_Window->GetMouseY());
 			isPress = true;
 		}
 		else if (m_Window->GetKey(RTL_BUTTON_LEFT) == RTL_PRESS && isPress) {
-			Vec2 now_L = Vec2((float)m_Window->GetMouseX(), (float)m_Window->GetMouseY());
-			Vec2 delta = now_L - ori_L;
+			Vec2 nowL = Vec2((float)m_Window->GetMouseX(), (float)m_Window->GetMouseY());
+			Vec2 delta = nowL - oriL;
 			float ax = delta.X / m_Width * PI * 2;
 			float ay = delta.Y / m_Height * PI;
 			float rotateSpeed = 0.5;
 			RotateCamera(m_Camera, Vec3(-ay, -ax, 0.0f));
-			ori_L = now_L;
+			oriL = nowL;
 		}
 		else if (isPress) {
 			isPress = false;
@@ -121,8 +116,9 @@ namespace RTL {
 		m_Uniforms.Shininess = 128;
 
 		for (int i = 0; i < m_Mesh.size(); i++) {
-			Renderer::Draw(m_Framebuffer, m_Program, m_Mesh[i], m_Uniforms);
+			//Renderer::Draw(m_Framebuffer, m_Program, m_Mesh[i], m_Uniforms);
 		}
+		m_Framebuffer->DrawTextTTF(10, 50, "test", 32.0f, Vec3(1.0f, 1.0f, 1.0f));
 		
 	}
 

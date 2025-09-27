@@ -14,15 +14,15 @@
 namespace RTL {
 
 	struct Camera {
-		Vec4 Pos = Vec4(0.0f, 0.0f, 0.0f, 1.0f);
-		Vec4 Right = Vec4(-1.0f, 0.0f, 0.0f, 0.0f);
+		Vec4 Pos = Vec4(0.0f, 0.0f, 5.0f, 1.0f);
+		Vec4 Right = Vec4(1.0f, 0.0f, 0.0f, 0.0f);
 		Vec4 Up = Vec4(0.0f, 1.0f, 0.0f, 0.0f);
-		Vec4 Dir = Vec4(0.0f, 0.0f, 1.0f, 0.0f);
+		Vec4 Dir = Vec4(0.0f, 0.0f, -1.0f, 0.0f);
 		Vec3 Rot = Vec3(0, 0, 0);
 		float Aspect = 4.0f / 4.0f;
-		float Fov = PI / 2.0f;
+		float Fov = PI / 4.0f;
 		float Near = 0.1f;
-		float Far = 100.0f;
+		float Far = 10.0f;
 	};
 
 	class Application {
@@ -43,6 +43,8 @@ namespace RTL {
 		void OnCameraUpdate(float time);
 		void OnUpdate(float time);
 
+		void RotateCamera(Camera& camera, Vec3 Ang);
+
 		void LoadMesh(const char* fileName);
 
 	private:
@@ -58,6 +60,10 @@ namespace RTL {
 
 		BlinnUniforms m_Uniforms;
 		Program<BlinnVertex, BlinnUniforms, BlinnVaryings> m_Program{ BlinnVertexShader, BlinnFragmentShader };
+
+	private:
+		bool isPress = false;
+		Vec2 oriL;
 	};
 
 }
