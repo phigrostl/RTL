@@ -1,6 +1,8 @@
 #pragma once
 
 #include "RTL/Base/Maths.h"
+#include <stb_image/stb_truetype.h>
+#include <fstream>
 
 namespace RTL {
 
@@ -20,6 +22,10 @@ namespace RTL {
 		void Clear(const Vec3& color = Vec3(0.0f, 0.0f, 0.0f));
 		void ClearDepth(const float depth = 1.0f);
 
+		void LoadFontTTF(const std::string& fontPath);
+		void DrawCharTTF(int x, int y, char c, const Vec3& color, float fontSize);
+		void DrawTextTTF(int x, int y, const std::string& text, const Vec3& color, float fontSize);
+
 		static Framebuffer* Create(const int width, const int height);
 
 	private:
@@ -31,6 +37,9 @@ namespace RTL {
 		int m_PixelSize;
 		float* m_DepthBuffer;
 		Vec3* m_ColorBuffer;
+
+		stbtt_fontinfo m_FontInfo;
+		std::vector<unsigned char> m_fontBuffer;
 	};
 
 }

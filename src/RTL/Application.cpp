@@ -19,15 +19,20 @@ namespace RTL {
 		Window::Init();
 		m_Window = Window::Create(m_Name, m_Width, m_Height);
 		m_Framebuffer = Framebuffer::Create(m_Width, m_Height);
+		m_Framebuffer->LoadFontTTF("../../../assets/arial.ttf");
 		m_Camera.Aspect = (float)m_Width / (float)m_Height;
-		LoadMesh("../../../assets/box.obj");
-
-		
+		m_Uniforms.Diffuse = new Texture("../../../assets/H.png");
+		m_Uniforms.EnableLerpTexture = false;
+		LoadMesh("../../../assets/H.obj");
 	}
 
 	void Application::Terminate() {
 		delete m_Window;
 		Window::Terminate();
+		if (m_Uniforms.Diffuse != nullptr)
+			delete m_Uniforms.Diffuse;
+		if (m_Uniforms.Specular != nullptr)
+			delete m_Uniforms.Specular;
 	}
 
 	void Application::Run() {
@@ -116,10 +121,15 @@ namespace RTL {
 		m_Uniforms.Shininess = 128;
 
 		for (int i = 0; i < m_Mesh.size(); i++) {
-			//Renderer::Draw(m_Framebuffer, m_Program, m_Mesh[i], m_Uniforms);
+			Renderer::Draw(m_Framebuffer, m_Program, m_Mesh[i], m_Uniforms);
 		}
-		m_Framebuffer->DrawTextTTF(10, 50, "test", 32.0f, Vec3(1.0f, 1.0f, 1.0f));
 		
+		int x = m_Window->GetMouseX();
+		int y = m_Window->GetMouseY();
+		float depth = m_Framebuffer->GetDepth(x, m_Height - y - 1);
+
+		m_Framebuffer->DrawTextTTF(0, 0, "Depth: " + std::to_string(depth), Vec3(1.0f, 1.0f, 1.0f), 36);
+
 	}
 
 	void Application::LoadMesh(const char* fileName) {

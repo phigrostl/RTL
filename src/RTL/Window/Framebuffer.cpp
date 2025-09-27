@@ -59,6 +59,49 @@ namespace RTL {
 			m_DepthBuffer[i] = depth;
 	}
 
+	void Framebuffer::LoadFontTTF(const std::string& fontPath) {
+		std::ifstream file(fontPath, std::ios::binary);
+		if (!file) return;
+		m_fontBuffer = std::vector<unsigned char>((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+		file.close();
+        stbtt_InitFont(&m_FontInfo, m_fontBuffer.data(), 0);
+	}
+
+	void Framebuffer::DrawCharTTF(int x, int y, char c, const Vec3& color, float fontSize) {
+		unsigned char* bitmap;
+		int w, h, xoff, yoff;
+		float scale = stbtt_ScaleForPixelHeight(&m_FontInfo, fontSize);
+
+		bitmap = stbtt_GetCodepointBitmap(&m_FontInfo, 0, scale, c, &w, &h, &xoff, &yoff);
+
+		for (int j = 0; j < h; j++) {
+			for (int i = 0; i < w; i++) {
+				float alpha = bitmap[i + j * w] / 255.0f;
+				if (alpha > 0.1f) {
+					Vec3 col = color * alpha;
+					SetColor(x + i + xoff, m_Height - (y + j + yoff), col);
+				}
+			}
+		}
+		stbtt_FreeBitmap(bitmap, nullptr);
+	}
+
+	void Framebuffer::DrawTextTTF(int x, int y, const std::string& text, const Vec3& color, float fontSize) {
+		float scale = stbtt_ScaleForPixelHeight(&m_FontInfo, fontSize);
+		int xpos = x;
+		int ascent, descent, lineGap;;
+		stbtt_GetFontVMetrics(&m_FontInfo, &ascent, &descent, &lineGap);
+		int baseline = int(ascent * scale);
+		for (char c : text) {
+			int ax;
+			int lsb;
+			stbtt_GetCodepointHMetrics(&m_FontInfo, c, &ax, &lsb);
+			DrawCharTTF(xpos, y + baseline, c, color, fontSize);
+			int kern = stbtt_GetCodepointKernAdvance(&m_FontInfo, c, c);
+			xpos += int(ax * scale) + kern;
+		}
+	}
+
 	Framebuffer* Framebuffer::Create(const int width, const int height) {
 		return new Framebuffer(width, height);
 	}

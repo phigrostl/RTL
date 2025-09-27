@@ -16,4 +16,5 @@ add_executable(RTL
 	"src/RTL/Shader/Texture.cpp"
 
 	"src/RTL/stb/stb_image.cpp"
+	"src/RTL/stb/stb_truetype.cpp"
 )
