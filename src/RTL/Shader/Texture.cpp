@@ -78,6 +78,8 @@ namespace RTL {
 	}
 
 	Vec4 Texture::Sample(Vec2 texCoords, bool EnableLerp) const {
+		if (m_Data == nullptr)
+			return Vec4(0.0f, 0.0f, 0.0f, 0.0f);
 		if (!EnableLerp) {
 			float vx = Clamp(texCoords.X, 0.0f, 1.0f);
 			float vy = Clamp(texCoords.Y, 0.0f, 1.0f);

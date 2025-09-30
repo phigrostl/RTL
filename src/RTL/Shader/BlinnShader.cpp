@@ -32,7 +32,7 @@ namespace RTL {
 		Vec3 specularSum = Vec3(0.0f, 0.0f, 0.0f);
 
 		for (size_t i = 0; i < uniforms.Lights.size(); ++i) {
-			const Light& light = uniforms.Lights[i];
+			const BlinnLight& light = uniforms.Lights[i];
 			Vec3 lightDir = Normalize(light.Position - worldPos);
 			Vec3 halfDir = Normalize(viewDir + lightDir);
 			float dist = Length(light.Position - worldPos);
@@ -46,6 +46,15 @@ namespace RTL {
 
 		Vec3 result = (ambient + diffuseSum + specularSum);
 		return Vec4(result, 1.0f);
+	}
+
+	void BlinnOnUpdate(BlinnUniforms& uniforms) {
+		uniforms.ModelNormalWorld = Mat4Identity();
+	}
+	void BlinnInit(BlinnUniforms& uniforms) {
+		uniforms.Ambient = Vec3(0.1f, 0.1f, 0.1f);
+		uniforms.Diffuse = new Texture("../../assets/H.png");
+		uniforms.Shininess = 32.0f;
 	}
 
 }

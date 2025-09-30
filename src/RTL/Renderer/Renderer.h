@@ -23,7 +23,7 @@ namespace RTL {
 		ALWAYS
 	};
 
-	template<typename vertex_t, typename uniforms_t, typename varyings_t>
+	template<typename vertex_t, typename varyings_t, typename uniforms_t>
 	struct Program {
 
 		bool EnableDoubleSided = false;
@@ -188,9 +188,9 @@ namespace RTL {
 			}
 		}
 
-		template<typename vertex_t, typename uniforms_t, typename varyings_t>
+		template<typename vertex_t, typename varyings_t, typename uniforms_t>
 		static void ProcessPixel(Framebuffer* framebuffer, const int x, const int y,
-			const Program<vertex_t, uniforms_t, varyings_t>& program,
+			const Program<vertex_t, varyings_t, uniforms_t>& program,
 			const varyings_t& varyings, const uniforms_t& uniforms) {
 
 			bool discard = false;
@@ -215,7 +215,7 @@ namespace RTL {
 
 		template<typename vertex_t, typename uniforms_t, typename varyings_t>
 		static void RasterizeTriangle(Framebuffer* framebuffer,
-									  const Program<vertex_t, uniforms_t, varyings_t>& program,
+									  const Program<vertex_t, varyings_t, uniforms_t>& program,
 									  const varyings_t(&varyings)[3],
 									  const uniforms_t& uniforms) {
 
@@ -256,8 +256,8 @@ namespace RTL {
 		}
 
 	public:
-		template<typename vertex_t, typename uniforms_t, typename varyings_t>
-		static void Draw(Framebuffer* framebuffer, const Program<vertex_t, uniforms_t, varyings_t>& program, const Triangle<vertex_t>& triangle, const uniforms_t& uniforms) {
+		template<typename vertex_t, typename varyings_t, typename uniforms_t>
+		static void Draw(Framebuffer* framebuffer, const Program<vertex_t, varyings_t, uniforms_t>& program, const Triangle<vertex_t>& triangle, const uniforms_t& uniforms) {
 			varyings_t varyings[RTL_MAX_VARYINGS];
 			for (int i = 0; i < 3; i++)
 				program.VertexShader(varyings[i], triangle[i], uniforms);
