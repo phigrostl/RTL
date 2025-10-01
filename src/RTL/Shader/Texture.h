@@ -11,7 +11,7 @@ namespace RTL {
 		Texture(const std::string& path);
 		~Texture();
 
-		Vec4 Sample(Vec2 texCoords, bool EnableLerp) const;
+		Vec4 Sample(Vec2 texCoords, bool enableLerp = true, Vec4 defaultValue = Vec4(0.0f)) const;
 
 	private:
 		void Init();

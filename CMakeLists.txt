@@ -19,4 +19,5 @@ add_executable(RTL
 	
 	"src/RTL/Shader/BlinnShader.cpp"
 	"src/RTL/Shader/PBRShader.cpp"
+	"src/RTL/Shader/BRDFShader.cpp"
 )

@@ -52,6 +52,13 @@ namespace RTL {
 		uniforms.ModelNormalWorld = Mat4Identity();
 	}
 	void BlinnInit(BlinnUniforms& uniforms) {
+
+		uniforms.Lights.push_back(BlinnLight());
+		uniforms.Lights[0].Diffuse = Vec3(1.0f, 1.0f, 1.0f);
+		uniforms.Lights[0].Specular = Vec3(1.0f, 1.0f, 1.0f);
+		uniforms.Lights[0].Strength = 0.2f;
+		uniforms.Lights[0].Position = Vec3(0.0f, 0.0f, -1.5f);
+
 		uniforms.Ambient = Vec3(0.1f, 0.1f, 0.1f);
 		uniforms.Diffuse = new Texture("../../assets/H.png");
 		uniforms.Shininess = 32.0f;

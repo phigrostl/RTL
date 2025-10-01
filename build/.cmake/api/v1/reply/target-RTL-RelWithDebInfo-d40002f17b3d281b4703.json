@@ -2,10 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "RTL.exe"
+			"path" : "RelWithDebInfo/RTL.exe"
 		},
 		{
-			"path" : "RTL.pdb"
+			"path" : "RelWithDebInfo/RTL.pdb"
 		}
 	],
 	"backtrace" : 1,
@@ -45,10 +45,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "/DWIN32 /D_WINDOWS /W3 /GR /EHsc /MD /O2 /Ob2 /DNDEBUG"
-				},
-				{
-					"fragment" : "-std:c++17"
+					"fragment" : "/DWIN32 /D_WINDOWS /W3 /GR /EHsc /MD /Zi /O2 /Ob1 /DNDEBUG -std:c++17"
 				}
 			],
 			"includes" : 
@@ -78,8 +75,15 @@
 				7,
 				8,
 				9,
-				10
+				10,
+				11
 			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
 		}
 	],
 	"id" : "RTL::@6890427a1f51a3e7e1df",
@@ -88,11 +92,15 @@
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "/DWIN32 /D_WINDOWS /W3 /GR /EHsc /MD /O2 /Ob2 /DNDEBUG",
+				"fragment" : "/DWIN32 /D_WINDOWS /W3 /GR /EHsc /MD /Zi /O2 /Ob1 /DNDEBUG",
 				"role" : "flags"
 			},
 			{
-				"fragment" : "/machine:x64 /INCREMENTAL:NO /subsystem:console",
+				"fragment" : "/machine:X86 /debug /INCREMENTAL",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "/subsystem:console",
 				"role" : "flags"
 			},
 			{
@@ -124,7 +132,8 @@
 				7,
 				8,
 				9,
-				10
+				10,
+				11
 			]
 		},
 		{
@@ -200,6 +209,12 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "src/RTL/Shader/PBRShader.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/RTL/Shader/BRDFShader.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],

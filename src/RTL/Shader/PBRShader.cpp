@@ -53,11 +53,22 @@ namespace RTL {
 	}
 
 	Vec4 PBRFragmentShader(bool& discard, const PBRVaryings& varyings, const PBRUniforms& uniforms) {
+		const Vec3 Albedo = uniforms.Albedo->Sample(varyings.TexCoord, uniforms.EnableLerpTexture);
+
+		const Vec3 MetallicVec = uniforms.Metallic->Sample(varyings.TexCoord, uniforms.EnableLerpTexture, Vec4(0.7f));
+		const float Metallic = (MetallicVec.X + MetallicVec.Y + MetallicVec.Z) / 3.0f;
+
+		const Vec3 RoughnessVec = uniforms.Roughness->Sample(varyings.TexCoord, uniforms.EnableLerpTexture, Vec4(0.5f));
+		const float Roughness = (RoughnessVec.X + RoughnessVec.Y + RoughnessVec.Z) / 3.0f;
+
+		const Vec3 AoVec = uniforms.Ao->Sample(varyings.TexCoord, uniforms.EnableLerpTexture, Vec4(1.0f));
+		const float Ao = (AoVec.X + AoVec.Y + AoVec.Z) / 3.0f;
+
 		Vec3 N = Normalize(varyings.WorldNormal);
 		Vec3 V = Normalize(uniforms.CameraPos - varyings.WorldPos);
 
 		Vec3 F0 = Vec3(0.04f, 0.04f, 0.04f);
-		F0 = Lerp(F0, uniforms.Albedo, uniforms.Metalic);
+		F0 = Lerp(F0, Albedo, Metallic);
 
 		Vec3 Lo = Vec3(0.0f, 0.0f, 0.0f);
 		for (int i = 0; i < uniforms.Lights.size(); i++) {
@@ -65,10 +76,10 @@ namespace RTL {
 			Vec3 H = Normalize(L + V);
 			float distance = Length(uniforms.Lights[i].Position - varyings.WorldPos);
 			float attenuation = 1.0f / (distance * distance);
-			Vec3 radiance = uniforms.Lights[i].Color * attenuation;
+			Vec3 radiance = uniforms.Lights[i].Color;
 
-			float NDF = DistributionGGX(N, H, uniforms.Roughness);
-			float G = GeometrySmith(N, V, L, uniforms.Roughness);
+			float NDF = DistributionGGX(N, H, Roughness);
+			float G = GeometrySmith(N, V, L, Roughness);
 			Vec3 F = FresnelSchlick(Max(0.0f, Dot(H, V)), F0);
 
 			Vec3 numerator = NDF * G * F;
@@ -77,20 +88,14 @@ namespace RTL {
 
 			Vec3 kS = F;
 			Vec3 kD = Vec3(1.0f) - kS;
-            kD *= 1.0f - uniforms.Metalic;
+            kD *= 1.0f - Metallic;
 
 			float NdotL = Max(0.0f, Dot(N, L));
 
-			Lo += (kD * uniforms.Albedo / PI + specular) * radiance * NdotL;
+			Lo += (kD * Albedo / PI + specular) * radiance * NdotL;
 		}
 
-		Vec4 Diffuse;
-		if (uniforms.Diffuse)
-			Diffuse = uniforms.Diffuse->Sample(varyings.TexCoord, uniforms.EnableLerpTexture);
-		else
-			Diffuse = Vec4(uniforms.Albedo, 1.0f);
-
-		Vec3 ambient = Vec3(0.3f, 0.3f, 0.3f) * Diffuse;
+		Vec3 ambient = Vec3(0.4f, 0.4f, 0.4f) * Albedo * Ao;
 		Vec3 color = ambient + Lo;
 		color = color / (color + Vec3(1.0f));
 		
@@ -100,9 +105,18 @@ namespace RTL {
 
 	void PBROnUpdate(PBRUniforms& uniforms) {
 		uniforms.ModelNormalWorld = Mat4Identity();
+		
 	}
 	void PBRInit(PBRUniforms& uniforms) {
-		uniforms.Diffuse = new Texture("../../assets/Test.png");
+		uniforms.EnableLerpTexture = false;
+
+		uniforms.Lights.push_back(PBRLight());
+		uniforms.Lights[0].Color = Vec3(1.0f, 1.0f, 1.0f);
+		uniforms.Lights[0].Position = Vec3(0.0f, 0.0f, -1.5f);
+
+		uniforms.Albedo = new Texture("../../assets/H.png");
+		uniforms.Roughness = new Texture("../../assets/H.png");
+		uniforms.Ao = new Texture("../../assets/H.png");
 	}
 
 }

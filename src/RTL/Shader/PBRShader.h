@@ -19,20 +19,16 @@ namespace RTL {
 	};
 
 	struct PBRUniforms : public UniformsBase {
-		Mat4 Model;
 		Mat4 ModelNormalWorld;
 
-		Vec3 Albedo = Vec3(1.0f, 1.0f, 1.0f);
-		float Metalic = 0.5f;
-		float Roughness = 0.5f;
-		float Ao = 1.0f;
+		Texture* Albedo = nullptr;
+		Texture* Metallic = nullptr;
+		Texture* Roughness = nullptr;
+		Texture* Ao = nullptr;
 
-		Texture* Diffuse = nullptr;
 		bool EnableLerpTexture = true;
 
 		std::vector<PBRLight> Lights;
-
-		Vec3 CameraPos;
 	};
 
 	void PBRVertexShader(PBRVaryings& varyings, const PBRVertex& vertex, const PBRUniforms& uniforms);

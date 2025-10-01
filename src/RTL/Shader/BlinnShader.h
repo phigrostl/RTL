@@ -23,10 +23,8 @@ namespace RTL {
 	};
 
 	struct BlinnUniforms : public UniformsBase {
-		Mat4 Model;
 		Mat4 ModelNormalWorld;
 		Vec3 Ambient = Vec3(0.7f, 0.7f, 0.7f);
-		Vec3 CameraPos;
 		std::vector<BlinnLight> Lights;
 
 		float Shininess = 3.0f;

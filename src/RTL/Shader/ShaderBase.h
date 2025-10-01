@@ -18,6 +18,8 @@ namespace RTL {
 
 	struct UniformsBase {
 		Mat4 MVP;
+		Vec3 CameraPos;
+		Mat4 Model;
 	};
 
 }
