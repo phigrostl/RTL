@@ -1,4 +1,4 @@
-﻿# RTL
+# RTL
 ### 介绍
 `RTL` 是一个在 `Windows` 平台使用 `C++` 编写的软件光栅渲染器
 
@@ -49,16 +49,24 @@ cd build                                        // 进入构建目录
 
 ### 效果
  - `Blinn-Phong` 光照模型
- <img src="./BlinnShader.png" width="400px" height="300px" />
+ <div>
+	<img src="./BlinnShader.png" width="400px" height="300px" />
+ </div>
  > 来源 : [第五人格模型](https://id5.163.com/nrzx/role.html)
 
  - `PBR` 光照模型
- <img src="./PBRBall.png" width="400px" height="300px" />
+ <div>
+	<img src="./PBRBall.png" width="400px" height="300px" />
+ </div>
 
  - `PBR` 材质贴图
- <img src="./PBRTexture.png" width="400px" height="300px" />
+ <div>
+	<img src="./PBRTexture.png" width="400px" height="300px" />
+ </div>
 
  - `PBR` 大模型
- <img src="./PBRBigModel.png" width="400px" height="300px" />
+ <div>
+	<img src="./PBRBigModel.png" width="400px" height="300px" />
+ </div>
  > 来源 : 第五人格 由[`忌涼`](https://www.aplaybox.com/details/model/ycCmx2yWejb8)提取
  
