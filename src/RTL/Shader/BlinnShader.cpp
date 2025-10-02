@@ -60,7 +60,7 @@ namespace RTL {
 		uniforms.Lights[0].Position = Vec3(0.0f, 0.0f, -1.5f);
 
 		uniforms.Ambient = Vec3(0.1f, 0.1f, 0.1f);
-		uniforms.Diffuse = new Texture("../../assets/H.png");
+		uniforms.Diffuse = new Texture("H.png");
 		uniforms.Shininess = 32.0f;
 	}
 

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #define _CRT_SECURE_NO_WARNINGS
 
@@ -98,7 +98,8 @@ namespace RTL {
 	template<typename vertex_t, typename varyings_t, typename uniforms_t>
 	void Application<vertex_t, varyings_t, uniforms_t>::Init() {
 
-		_chdir("../../assets/");
+		if (_chdir("../../assets/"))
+			exit(1);
 
 		Window::Init();
 		m_Window = Window::Create(m_Name, m_Width, m_Height);
@@ -110,7 +111,7 @@ namespace RTL {
 
 		m_ShaderInit(m_Uniforms);
 
-		LoadMesh("sphere.obj");
+		LoadMesh("H.obj");
 	}
 
 	template<typename vertex_t, typename varyings_t, typename uniforms_t>
@@ -216,9 +217,9 @@ namespace RTL {
 			size_t threadTriangleEnd = currentTriangle + threadTriangleCount;
 			currentTriangle = threadTriangleEnd;
 
-			threads.emplace_back([this, threadTriangleStart, threadTriangleEnd]() {
-				for (size_t i = threadTriangleStart; i < threadTriangleEnd; i++) {
-					Renderer::Draw(m_Framebuffer, m_Program, m_Mesh[i], m_Uniforms);
+			threads.emplace_back([&, threadTriangleStart, threadTriangleEnd]() {
+				for (size_t j = threadTriangleStart; j < threadTriangleEnd; j++) {
+					Renderer::Draw(m_Framebuffer, m_Program, m_Mesh[j], m_Uniforms);
 				}
 			});
 		}
@@ -244,6 +245,9 @@ namespace RTL {
 		m_ShaderUpdate(m_Uniforms);
 
 		DrawTrianglesThreaded();
+
+		float FPS = 1.0f / time * 1000.0f;
+        m_Framebuffer->DrawTextTTF(0, 0, std::to_string(FPS), Vec3(1.0f, 1.0f, 1.0f), 20.0f);
 
 	}
 
