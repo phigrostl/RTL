@@ -49,10 +49,10 @@ cd build                                        // 进入构建目录
 
 ### 效果
  - `Blinn-Phong` 光照模型
+ > 来源 : [第五人格模型](https://id5.163.com/nrzx/role.html)
  <div>
 	<img src="./BlinnShader.png" width="400px" height="300px" />
  </div>
- > 来源 : [第五人格模型](https://id5.163.com/nrzx/role.html)
 
  - `PBR` 光照模型
  <div>
@@ -65,8 +65,8 @@ cd build                                        // 进入构建目录
  </div>
 
  - `PBR` 大模型
+ > 来源 : 第五人格 由[`忌涼`](https://www.aplaybox.com/details/model/ycCmx2yWejb8)提取
  <div>
 	<img src="./PBRBigModel.png" width="400px" height="300px" />
  </div>
- > 来源 : 第五人格 由[`忌涼`](https://www.aplaybox.com/details/model/ycCmx2yWejb8)提取
  
