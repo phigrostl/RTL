@@ -2,7 +2,10 @@
 #include "ShaderBase.h"
 
 #include "RTL/Base/Maths.h"
-#include "RTL//Shader/Texture.h"
+#include "RTL/Shader/Texture.h"
+
+#undef min
+#undef max
 
 namespace RTL {
 

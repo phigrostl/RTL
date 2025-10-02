@@ -369,9 +369,11 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="D:\RTL\src\RTL\Renderer\Renderer.cpp" />
     <ClCompile Include="D:\RTL\src\RTL\stb\stb_image.cpp" />
     <ClCompile Include="D:\RTL\src\RTL\stb\stb_truetype.cpp" />
+    <ClCompile Include="D:\RTL\src\RTL\stb\std_image_resize2.cpp" />
     <ClCompile Include="D:\RTL\src\RTL\Shader\BlinnShader.cpp" />
     <ClCompile Include="D:\RTL\src\RTL\Shader\PBRShader.cpp" />
     <ClCompile Include="D:\RTL\src\RTL\Shader\BRDFShader.cpp" />
+    <ClCompile Include="D:\RTL\src\RTL\Shader\IBLPBRShader.cpp" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -1,16 +1,16 @@
 ﻿#include "RTL/Application.h"
 
-#include "RTL/Shader/BlinnShader.h"
+#include "RTL/Shader/PBRShader.h"
 
 using namespace RTL;
 
 int main(int argc, char* argv[]) {
 
-	Application<BlinnVertex, BlinnVaryings, BlinnUniforms> App(
+	Application App(
 		argc, argv,
 		"RTL", 800, 600,
-		BlinnVertexShader, BlinnFragmentShader,
-		BlinnInit, BlinnOnUpdate
+		PBRVertexShader, PBRFragmentShader,
+		PBRInit, PBROnUpdate
 	);
 
 	App.Run();

@@ -53,16 +53,13 @@ namespace RTL {
 	}
 
 	Vec4 PBRFragmentShader(bool& discard, const PBRVaryings& varyings, const PBRUniforms& uniforms) {
-		const Vec3 Albedo = uniforms.Albedo->Sample(varyings.TexCoord, uniforms.EnableLerpTexture);
+		const Vec4 Albedo = uniforms.Albedo->Sample(varyings.TexCoord, uniforms.EnableLerpTexture, Vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
-		const Vec3 MetallicVec = uniforms.Metallic->Sample(varyings.TexCoord, uniforms.EnableLerpTexture, Vec4(0.7f));
-		const float Metallic = (MetallicVec.X + MetallicVec.Y + MetallicVec.Z) / 3.0f;
+		const float Metallic = uniforms.Metallic->SampleFloat(varyings.TexCoord, uniforms.EnableLerpTexture, 0.7f);
 
-		const Vec3 RoughnessVec = uniforms.Roughness->Sample(varyings.TexCoord, uniforms.EnableLerpTexture, Vec4(0.5f));
-		const float Roughness = (RoughnessVec.X + RoughnessVec.Y + RoughnessVec.Z) / 3.0f;
+		const float Roughness = uniforms.Roughness->SampleFloat(varyings.TexCoord, uniforms.EnableLerpTexture, 0.5f);
 
-		const Vec3 AoVec = uniforms.Ao->Sample(varyings.TexCoord, uniforms.EnableLerpTexture, Vec4(1.0f));
-		const float Ao = (AoVec.X + AoVec.Y + AoVec.Z) / 3.0f;
+		const float Ao = uniforms.Ao->SampleFloat(varyings.TexCoord, uniforms.EnableLerpTexture, 1.0f);
 
 		Vec3 N = Normalize(varyings.WorldNormal);
 		Vec3 V = Normalize(uniforms.CameraPos - varyings.WorldPos);
@@ -71,7 +68,7 @@ namespace RTL {
 		F0 = Lerp(F0, Albedo, Metallic);
 
 		Vec3 Lo = Vec3(0.0f, 0.0f, 0.0f);
-		for (int i = 0; i < uniforms.Lights.size(); i++) {
+		for (size_t i = 0; i < uniforms.Lights.size(); i++) {
 			Vec3 L = Normalize(uniforms.Lights[i].Position - varyings.WorldPos);
 			Vec3 H = Normalize(L + V);
 			float distance = Length(uniforms.Lights[i].Position - varyings.WorldPos);
@@ -105,18 +102,19 @@ namespace RTL {
 
 	void PBROnUpdate(PBRUniforms& uniforms) {
 		uniforms.ModelNormalWorld = Mat4Identity();
-		
+		float Metallic = uniforms.Metallic->SampleFloat(Vec2(0.0f, 0.0f), false, 0.5f);
+		uniforms.Metallic = new Texture((fmod((Metallic + 0.01f), 1.0f)));
 	}
 	void PBRInit(PBRUniforms& uniforms) {
 		uniforms.EnableLerpTexture = false;
 
 		uniforms.Lights.push_back(PBRLight());
-		uniforms.Lights[0].Color = Vec3(1.0f, 1.0f, 1.0f);
+		uniforms.Lights[0].Color = Vec3(1.0f, 0.0f, 0.0f);
 		uniforms.Lights[0].Position = Vec3(0.0f, 0.0f, -1.5f);
-
-		uniforms.Albedo = new Texture("../../assets/H.png");
-		uniforms.Roughness = new Texture("../../assets/H.png");
-		uniforms.Ao = new Texture("../../assets/H.png");
+		uniforms.Albedo = new Texture("H.png");
+		uniforms.Roughness = new Texture("H.png");
+		uniforms.Metallic = new Texture("H.png");
+		uniforms.Ao = new Texture(1.0f);
 	}
 
 }

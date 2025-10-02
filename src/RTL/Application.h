@@ -9,6 +9,7 @@
 #include <string>
 #include <fstream>
 #include <thread>
+#include <direct.h>
 
 namespace RTL {
 
@@ -20,7 +21,7 @@ namespace RTL {
 		Vec3 Rot = Vec3(0, 0, 0);
 		float Aspect = 4.0f / 4.0f;
 		float Fov = PI / 4.0f;
-		float Near = 0.1f;
+		float Near = 1.0f;
 		float Far = 10.0f;
 	};
 
@@ -51,6 +52,7 @@ namespace RTL {
 		void RotateCamera(Camera& camera, Vec3 Ang);
 
 		void LoadMesh(const char* fileName);
+		void DrawTrianglesThreaded();
 
 	private:
 		std::string m_Name;
@@ -95,6 +97,9 @@ namespace RTL {
 
 	template<typename vertex_t, typename varyings_t, typename uniforms_t>
 	void Application<vertex_t, varyings_t, uniforms_t>::Init() {
+
+		_chdir("../../assets/");
+
 		Window::Init();
 		m_Window = Window::Create(m_Name, m_Width, m_Height);
 
@@ -105,9 +110,7 @@ namespace RTL {
 
 		m_ShaderInit(m_Uniforms);
 
-		m_Program.EnableDoubleSided = true;
-
-		LoadMesh("../../assets/H.obj");
+		LoadMesh("sphere.obj");
 	}
 
 	template<typename vertex_t, typename varyings_t, typename uniforms_t>
@@ -119,7 +122,7 @@ namespace RTL {
 	template<typename vertex_t, typename varyings_t, typename uniforms_t>
 	void Application<vertex_t, varyings_t, uniforms_t>::Run() {
 		while (!m_Window->Closed()) {
-			m_Framebuffer->Clear();
+			m_Framebuffer->Clear(Vec3(0.09f, 0.10f, 0.11f));
 			m_Framebuffer->ClearDepth(m_Camera.Far);
 			m_Window->PollInputEvents();
 
@@ -151,9 +154,9 @@ namespace RTL {
 			m_Camera.Pos.Y -= time * speed;
 
 		if (m_Window->GetKey(RTL_KEY_Z) == RTL_PRESS)
-			m_Camera.Fov = Clamp(m_Camera.Fov + speed * time * 0.1f, 0, PI * 2);
+			m_Camera.Fov = Clamp(m_Camera.Fov + speed * time * 0.5f, 0, PI * 2);
 		if (m_Window->GetKey(RTL_KEY_X) == RTL_PRESS)
-			m_Camera.Fov = Clamp(m_Camera.Fov - speed * time * 0.1f, 0, PI * 2);
+			m_Camera.Fov = Clamp(m_Camera.Fov - speed * time * 0.5f, 0, PI * 2);
 
 		if (!isPress && m_Window->GetKey(RTL_BUTTON_LEFT) == RTL_PRESS) {
 			oriL = Vec2((float)m_Window->GetMouseX(), (float)m_Window->GetMouseY());
@@ -192,6 +195,41 @@ namespace RTL {
 	}
 
 	template<typename vertex_t, typename varyings_t, typename uniforms_t>
+	void Application<vertex_t, varyings_t, uniforms_t>::DrawTrianglesThreaded() {
+		size_t threadCount = std::thread::hardware_concurrency();
+		threadCount = std::max<size_t>(threadCount, (size_t)1);
+
+		const size_t triangleCount = m_Mesh.size();
+		if (triangleCount == 0) return;
+
+		const size_t trianglePerThread = triangleCount / threadCount;
+		const size_t remainingTriangles = triangleCount % threadCount;
+
+		std::vector<std::thread> threads;
+		threads.reserve(threadCount);
+
+		size_t currentTriangle = 0;
+
+		for (size_t i = 0; i < threadCount; i++) {
+			size_t threadTriangleCount = trianglePerThread + (i < remainingTriangles ? 1 : 0);
+			size_t threadTriangleStart = currentTriangle;
+			size_t threadTriangleEnd = currentTriangle + threadTriangleCount;
+			currentTriangle = threadTriangleEnd;
+
+			threads.emplace_back([this, threadTriangleStart, threadTriangleEnd]() {
+				for (size_t i = threadTriangleStart; i < threadTriangleEnd; i++) {
+					Renderer::Draw(m_Framebuffer, m_Program, m_Mesh[i], m_Uniforms);
+				}
+			});
+		}
+
+		for (auto& thread : threads) {
+			if (thread.joinable())
+				thread.join();
+		}
+	}
+
+	template<typename vertex_t, typename varyings_t, typename uniforms_t>
 	void Application<vertex_t, varyings_t, uniforms_t>::OnUpdate(float time) {
 		OnCameraUpdate(time);
 
@@ -205,16 +243,7 @@ namespace RTL {
 		
 		m_ShaderUpdate(m_Uniforms);
 
-		for (size_t i = 0; i < m_Mesh.size(); i++) {
-			Renderer::Draw(m_Framebuffer, m_Program, m_Mesh[i], m_Uniforms);
-		}
-
-		int x = m_Window->GetMouseX();
-		int y = m_Window->GetMouseY();
-		float depth = m_Framebuffer->GetDepth(x, m_Height - y - 1);
-		float c = (depth - m_Camera.Near) / (m_Camera.Far - m_Camera.Near) / 2 + 0.5f;
-
-		m_Framebuffer->DrawTextTTF(0, 0, std::to_string(depth).c_str(), Vec3(c, 1.0f, 1.0f), 16);
+		DrawTrianglesThreaded();
 
 	}
 

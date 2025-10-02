@@ -25,6 +25,9 @@
     <ClCompile Include="D:\RTL\src\RTL\stb\stb_truetype.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D:\RTL\src\RTL\stb\std_image_resize2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="D:\RTL\src\RTL\Shader\BlinnShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -32,6 +35,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D:\RTL\src\RTL\Shader\BRDFShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\RTL\src\RTL\Shader\IBLPBRShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

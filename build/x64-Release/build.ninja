@@ -119,6 +119,14 @@ build CMakeFiles\RTL.dir\src\RTL\stb\stb_truetype.cpp.obj: CXX_COMPILER__RTL_Rel
   TARGET_COMPILE_PDB = CMakeFiles\RTL.dir\
   TARGET_PDB = RTL.pdb
 
+build CMakeFiles\RTL.dir\src\RTL\stb\std_image_resize2.cpp.obj: CXX_COMPILER__RTL_Release ..\..\src\RTL\stb\std_image_resize2.cpp || cmake_object_order_depends_target_RTL
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MD /O2 /Ob2 /DNDEBUG -std:c++17
+  INCLUDES = -I..\..\src
+  OBJECT_DIR = CMakeFiles\RTL.dir
+  OBJECT_FILE_DIR = CMakeFiles\RTL.dir\src\RTL\stb
+  TARGET_COMPILE_PDB = CMakeFiles\RTL.dir\
+  TARGET_PDB = RTL.pdb
+
 build CMakeFiles\RTL.dir\src\RTL\Shader\BlinnShader.cpp.obj: CXX_COMPILER__RTL_Release ..\..\src\RTL\Shader\BlinnShader.cpp || cmake_object_order_depends_target_RTL
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MD /O2 /Ob2 /DNDEBUG -std:c++17
   INCLUDES = -I..\..\src
@@ -143,6 +151,14 @@ build CMakeFiles\RTL.dir\src\RTL\Shader\BRDFShader.cpp.obj: CXX_COMPILER__RTL_Re
   TARGET_COMPILE_PDB = CMakeFiles\RTL.dir\
   TARGET_PDB = RTL.pdb
 
+build CMakeFiles\RTL.dir\src\RTL\Shader\IBLPBRShader.cpp.obj: CXX_COMPILER__RTL_Release ..\..\src\RTL\Shader\IBLPBRShader.cpp || cmake_object_order_depends_target_RTL
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MD /O2 /Ob2 /DNDEBUG -std:c++17
+  INCLUDES = -I..\..\src
+  OBJECT_DIR = CMakeFiles\RTL.dir
+  OBJECT_FILE_DIR = CMakeFiles\RTL.dir\src\RTL\Shader
+  TARGET_COMPILE_PDB = CMakeFiles\RTL.dir\
+  TARGET_PDB = RTL.pdb
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target RTL
@@ -151,7 +167,7 @@ build CMakeFiles\RTL.dir\src\RTL\Shader\BRDFShader.cpp.obj: CXX_COMPILER__RTL_Re
 #############################################
 # Link the executable RTL.exe
 
-build RTL.exe: CXX_EXECUTABLE_LINKER__RTL_Release CMakeFiles\RTL.dir\src\RTL\Main.cpp.obj CMakeFiles\RTL.dir\src\RTL\Window\Window.cpp.obj CMakeFiles\RTL.dir\src\RTL\Window\Framebuffer.cpp.obj CMakeFiles\RTL.dir\src\RTL\Base\Maths.cpp.obj CMakeFiles\RTL.dir\src\RTL\Shader\Texture.cpp.obj CMakeFiles\RTL.dir\src\RTL\Renderer\Renderer.cpp.obj CMakeFiles\RTL.dir\src\RTL\stb\stb_image.cpp.obj CMakeFiles\RTL.dir\src\RTL\stb\stb_truetype.cpp.obj CMakeFiles\RTL.dir\src\RTL\Shader\BlinnShader.cpp.obj CMakeFiles\RTL.dir\src\RTL\Shader\PBRShader.cpp.obj CMakeFiles\RTL.dir\src\RTL\Shader\BRDFShader.cpp.obj
+build RTL.exe: CXX_EXECUTABLE_LINKER__RTL_Release CMakeFiles\RTL.dir\src\RTL\Main.cpp.obj CMakeFiles\RTL.dir\src\RTL\Window\Window.cpp.obj CMakeFiles\RTL.dir\src\RTL\Window\Framebuffer.cpp.obj CMakeFiles\RTL.dir\src\RTL\Base\Maths.cpp.obj CMakeFiles\RTL.dir\src\RTL\Shader\Texture.cpp.obj CMakeFiles\RTL.dir\src\RTL\Renderer\Renderer.cpp.obj CMakeFiles\RTL.dir\src\RTL\stb\stb_image.cpp.obj CMakeFiles\RTL.dir\src\RTL\stb\stb_truetype.cpp.obj CMakeFiles\RTL.dir\src\RTL\stb\std_image_resize2.cpp.obj CMakeFiles\RTL.dir\src\RTL\Shader\BlinnShader.cpp.obj CMakeFiles\RTL.dir\src\RTL\Shader\PBRShader.cpp.obj CMakeFiles\RTL.dir\src\RTL\Shader\BRDFShader.cpp.obj CMakeFiles\RTL.dir\src\RTL\Shader\IBLPBRShader.cpp.obj
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MD /O2 /Ob2 /DNDEBUG
   LINK_FLAGS = /machine:x64 /INCREMENTAL:NO /subsystem:console
   LINK_LIBRARIES = kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib

@@ -34,6 +34,8 @@ namespace RTL {
 		void DrawWCharTTF(int x, int y, wchar_t c, const Vec3& color, float fontSize);
 		void DrawWTextTTF(int x, int y, const std::wstring& text, const Vec3& color, float fontSize);
 
+		const float* GetRawColorData() const { return (float*)(m_ColorBuffer); }
+
 		static Framebuffer* Create(const int width, const int height);
 
 	private:
