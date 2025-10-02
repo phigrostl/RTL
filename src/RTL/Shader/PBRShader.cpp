@@ -102,19 +102,19 @@ namespace RTL {
 
 	void PBROnUpdate(PBRUniforms& uniforms) {
 		uniforms.ModelNormalWorld = Mat4Identity();
-		float Roughness = uniforms.Roughness->SampleFloat(Vec2(0.0f, 0.0f), false, 0.5f);
-		uniforms.Roughness = new Texture((fmod((Roughness + 0.01f), 1.0f)));
+		/*float Roughness = uniforms.Roughness->SampleFloat(Vec2(0.0f, 0.0f), false, 0.5f);
+		uniforms.Roughness = new Texture((fmod((Roughness + 0.01f), 1.0f)));*/
 	}
 	void PBRInit(PBRUniforms& uniforms) {
 		uniforms.EnableLerpTexture = false;
 
 		uniforms.Lights.push_back(PBRLight());
 		uniforms.Lights[0].Color = Vec3(1.0f, 1.0f, 1.0f);
-		uniforms.Lights[0].Position = Vec3(0.0f, 0.0f, -1.5f);
-		uniforms.Albedo = new Texture("H.png");
-		uniforms.Roughness = new Texture(1.0f);
-		uniforms.Metallic = new Texture(1.0f);
-		uniforms.Ao = new Texture(1.0f);
+		uniforms.Lights[0].Position = Vec3(0.0f, 0.5f, -1.5f);
+		uniforms.Albedo = new Texture("Test.png");
+		uniforms.Roughness = new Texture("Test.png");
+		uniforms.Metallic = new Texture("Test.png");
+		uniforms.Ao = new Texture("Test.png");
 	}
 
 }

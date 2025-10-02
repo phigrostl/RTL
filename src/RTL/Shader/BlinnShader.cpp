@@ -57,7 +57,7 @@ namespace RTL {
 		uniforms.Lights[0].Diffuse = Vec3(1.0f, 1.0f, 1.0f);
 		uniforms.Lights[0].Specular = Vec3(1.0f, 1.0f, 1.0f);
 		uniforms.Lights[0].Strength = 0.2f;
-		uniforms.Lights[0].Position = Vec3(0.0f, 0.0f, -1.5f);
+		uniforms.Lights[0].Position = Vec3(0.0f, 0.1f, -0.2f);
 
 		uniforms.Ambient = Vec3(0.1f, 0.1f, 0.1f);
 		uniforms.Diffuse = new Texture("H.png");

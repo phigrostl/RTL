@@ -111,7 +111,7 @@ namespace RTL {
 
 		m_ShaderInit(m_Uniforms);
 
-		LoadMesh("H.obj");
+		LoadMesh("box.obj");
 	}
 
 	template<typename vertex_t, typename varyings_t, typename uniforms_t>
@@ -123,7 +123,7 @@ namespace RTL {
 	template<typename vertex_t, typename varyings_t, typename uniforms_t>
 	void Application<vertex_t, varyings_t, uniforms_t>::Run() {
 		while (!m_Window->Closed()) {
-			m_Framebuffer->Clear(Vec3(0.09f, 0.10f, 0.11f));
+			m_Framebuffer->Clear(Vec3(0.09f, 0.10f, 0.14f));
 			m_Framebuffer->ClearDepth(m_Camera.Far);
 			m_Window->PollInputEvents();
 
